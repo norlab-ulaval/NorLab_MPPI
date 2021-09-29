@@ -56,7 +56,7 @@ def verify_pytorch_cuda_install() -> None:
 
         x = torch.rand(5, 3).cuda()
         print("\n", x)
-        print("\n> PyTorch can't access CUDA\n")
+        print("\n> PyTorch can access CUDA\n")
     except Exception as e:
         print("Something is wrong with PyTorch<<<>>>CUDA.")
         print(e)
