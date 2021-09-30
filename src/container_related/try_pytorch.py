@@ -15,16 +15,18 @@ def verify_pytorch_install() -> None:
     :return: None
     """
 
+    print("\n> Start Pytorch install check")
+
     try:
         import torch
 
-        print(f'PyTorch version:    {torch.__version__}')
+        print(f'> PyTorch version:    {torch.__version__}')
 
         x = torch.rand(5, 3)
         print("\n", x)
         print("\n> PyTorch install is good to go!\n")
     except Exception as e:
-        print("Something is wrong with PyTorch. It's probably the Dockerized-SNOW python interpreter")
+        print("> (!) Something is wrong with PyTorch. It's probably the Dockerized-SNOW python interpreter\n")
         print(e)
         raise e
 
@@ -45,22 +47,31 @@ def verify_pytorch_cuda_install() -> None:
 
     :return: None
     """
+    print("\n> Start Pytorch<<>>CUDA install check")
 
-    try:
-        import torch
+    import torch
 
-        assert torch.cuda.is_available(), "CUDA is not available to PyTorch"
+    cuda_is_available = torch.cuda.is_available()
 
-        print(f"CUDA is available:  {torch.cuda.is_available()}")
-        # print(f'cuDNN version:      {torch.backends.cudnn.version()}')
+    # assert cuda_is_available, "> (!) CUDA is not available to PyTorch\n"
+    # print(f"> CUDA is available:  {cuda_is_available}")
 
-        x = torch.rand(5, 3).cuda()
-        print("\n", x)
-        print("\n> PyTorch can access CUDA\n")
-    except Exception as e:
-        print("Something is wrong with PyTorch<<<>>>CUDA.")
-        print(e)
-        raise e
+    if cuda_is_available:
+        try:
+            print(f"> CUDA is available")
+            # print(f'cuDNN version:      {torch.backends.cudnn.version()}')
+
+            x = torch.rand(5, 3).cuda()
+            print("\n", x)
+            print("\n> PyTorch can access CUDA\n")
+        except Exception as e:
+            print("> (!) Something is wrong with PyTorch<<>>CUDA install.\n")
+            print(e)
+            raise e
+    else:
+        # print(f"> CUDA is NOT available")
+        print("> (!) Can't check PyTorch<<>>CUDA install.\n")
+        raise ResourceWarning("DS | CUDA is NOT available on this computer\n")
 
     return None
 
@@ -69,3 +80,4 @@ if __name__ == '__main__':
 
     verify_pytorch_install()
     verify_pytorch_cuda_install()
+
