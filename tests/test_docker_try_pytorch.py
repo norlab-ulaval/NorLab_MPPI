@@ -14,6 +14,6 @@ def test_verify_pytorch_cuda_install():
     return None
 
 
-# def test_fail():
-#     with pytest.raises(AssertionError):
-#         raise AssertionError
+def test_fail():
+    with pytest.raises(AssertionError):
+        raise AssertionError
