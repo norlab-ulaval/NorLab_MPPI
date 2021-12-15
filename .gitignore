@@ -1,1 +1,3 @@
-src/snow_small_mpc/venv/
+venv/
+__pycache__/
+.idea/
