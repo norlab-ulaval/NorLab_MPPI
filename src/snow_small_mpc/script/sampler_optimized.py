@@ -3,10 +3,13 @@ import copy
 
 import numpy as np
 import pandas as pd
+from numpy import ndarray
 from scipy.spatial import KDTree
+from typing import Any, Callable, List, Tuple
 
 
-def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
+def mpc_sampler_optimized(dt: float, n_samples: int, n_steps: int, std_dev_cmd: float, v_x_c: float) -> Tuple[
+    ndarray, ndarray, ndarray, List[ndarray], int]:
     # /// create ref traj //////////////////////////////////////////////////////////////////////////////////////////////
     df = pd.read_csv('src/snow_small_mpc/data/boreal_smooth.csv', header=None)
     # xs = df['Points:1']

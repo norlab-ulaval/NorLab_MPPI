@@ -12,7 +12,7 @@ n_steps = int(horizon/dt)
 n_samples = 1000
 std_dev_cmd = 1.5  # rad/s
 
-ref_traj, ref_tree, update_R, x_init, traj_nom, pool, min_cost_traj = mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
+ref_traj, x_init, traj_nom, pool, min_cost_traj = mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
 
 # /// plot trajectories ////////////////////////////////////////////////////////////////////////////////////////////////
 fig, ax = plt.subplots(figsize=(10, 10))
