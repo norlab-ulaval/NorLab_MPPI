@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 # /// set parameters ///////////////////////////////////////////////////////////////////////////////////////////////////
 from src.snow_small_mpc.script.sampler import mpc_sampler
@@ -19,12 +20,20 @@ cost_gain = 100
 
 ref_traj_path = 'src/snow_small_mpc/data/boreal_smooth.csv'
 
-ref_traj, ref_tree, update_R, x_init, traj_nom, pool, min_cost_traj = mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
-cost_map, map_extent = mpc_costmap(ref_traj_path, costmap_res, extra_dim, cost_gain)
+# /// create ref traj //////////////////////////////////////////////////////////////////////////////////////////////
+df = pd.read_csv(ref_traj_path, header=None)
+# xs = df['Points:1']
+xs = df[0]
+# ys = df['Points:0']
+ys = df[1]
+ref_traj = np.array([[x, y] for x, y in zip(xs, ys)])
+
+update_R, x_init, traj_nom, pool, min_cost_traj = mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
+# cost_map, map_extent, ref_traj = mpc_costmap(ref_traj_path, costmap_res, extra_dim, cost_gain)
 ## save costmap to increase compute time
 # np.save('src/snow_small_mpc/data/boreal_smooth_costmap', cost_map)
-# cost_map = np.load('src/snow_small_mpc/data/boreal_smooth_costmap.npy')
-# map_extent = -51, 51, -51, 51
+cost_map = np.load('src/snow_small_mpc/data/boreal_smooth_costmap.npy')
+map_extent = -51, 51, -51, 51
 
 # /// plot trajectories ////////////////////////////////////////////////////////////////////////////////////////////////
 fig, ax = plt.subplots(figsize=(10, 10))

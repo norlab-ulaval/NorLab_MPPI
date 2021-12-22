@@ -51,6 +51,6 @@ def mpc_costmap(traj_path, res, extra_dim, cost_gain):
             cell_cost, _ = ref_tree.query(np.array([x_cell, y_cell]), k=1)
             costmap[i, j] = cost_gain * cell_cost**0.5
 
-    return costmap, costmap_extent
+    return costmap, costmap_extent, ref_traj
 
 
