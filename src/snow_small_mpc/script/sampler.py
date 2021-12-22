@@ -65,9 +65,16 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
     # /// initialize state /////////////////////////////////////////////////////////////////////////////////////////////
     x_init = np.array([0.0, 0.0, 0.0])
     curr_x = x_init
+
+    # ❯❯❯ Nominal trajectory ❯❯❯ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+    # (!) As discuss with Luc and Simon, the MPC box should receive in input a nominal trajectory express in therme of
+    #  state only otherwise, the problem of fiding the optimal command u for t+1 would be solved already.
     u_nom = np.zeros((3, n_steps))
     u_nom[0, :] = v_x_c
     u_nom[2, :] = -np.pi/2
+
+    #  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .❮❮❮ Nominal trajectory ❮❮❮
+
     traj_nom = []
     R_init = np.eye(3)
     for i in range(0, n_steps):
