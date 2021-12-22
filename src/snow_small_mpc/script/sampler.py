@@ -7,16 +7,6 @@ from scipy.spatial import KDTree
 
 
 def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
-    # /// create ref traj //////////////////////////////////////////////////////////////////////////////////////////////
-    df = pd.read_csv('src/snow_small_mpc/data/boreal_smooth.csv', header=None)
-    # xs = df['Points:1']
-    xs = df[0]
-    # ys = df['Points:0']
-    ys = df[1]
-    ref_traj = np.array([[x, y] for x, y in zip(xs, ys)])
-    # print(ref_traj)
-    # create kdtree from traj
-    ref_tree = KDTree(ref_traj)
 
     # /// Utility function /////////////////////////////////////////////////////////////////////////////////////////////
     def update_R(R, theta):
@@ -52,10 +42,10 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
             traj = np.transpose(np.asarray(traj))
             pool.append(traj)
 
-            dd, _ = ref_tree.query(traj[:2, :].T, k=1,
+            # dd, _ = ref_tree.query(traj[:2, :].T, k=1,
                                    # workers=-1,
-                                   )
-            cost = np.sum(dd)
+                                   # )
+            # cost = np.sum(dd)
 
             if j > min_cost_traj and cost < min_cost:
                 min_cost_traj = j
@@ -85,11 +75,11 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
         traj_nom.append(new_x)
         curr_x = new_x
     traj_nom = np.transpose(np.asarray(traj_nom))
-    dd, _ = ref_tree.query(traj_nom[:2, :].T, k=1,
+    # dd, _ = ref_tree.query(traj_nom[:2, :].T, k=1,
                            # workers=-1,
-                           )
-    nom_cost = np.sum(dd)
+    #                        )
+    # nom_cost = np.sum(dd)
     # %timeit sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, nom_cost)
     pool, min_cost_traj, cost = sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, nom_cost)
 
-    return ref_traj, x_init, traj_nom, pool, min_cost_traj
+    return update_R, x_init, traj_nom, pool, min_cost_traj
