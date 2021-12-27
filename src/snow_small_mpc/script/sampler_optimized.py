@@ -7,17 +7,17 @@ from numpy import ndarray
 from scipy.spatial import KDTree
 from typing import Any, Callable, List, Tuple
 
+# (CRITICAL) todo: might be better to ditch this module and start from scratch (!)
 
 # todo:refactor compute_nominal_path >> parameters should be expressed as `trj_so_far`, `n_steps_foward`
 # todo:refactor compute_nominal_path >> with turn radius constraint: v_x_c/omega >= r_min
-def compute_nominal_path(x_init, n_samples, n_steps, v_x_c, R, dt):
+def compute_nominal_path(x_init, n_samples, n_steps, v_x_c, dt):
     """
 
     :param x_init:
     :param n_samples:
     :param n_steps:
     :param v_x_c:
-    :param R:
     :param dt:
     :return:
     """
@@ -47,7 +47,7 @@ def compute_nominal_path(x_init, n_samples, n_steps, v_x_c, R, dt):
         traj_nom.append(new_x)
         curr_x = new_x
     traj_nom = np.transpose(np.asarray(traj_nom))
-    return traj_nom
+    return traj_nom, u_nom
 
 
 def heading(trajs: np.ndarray, ts):
@@ -69,9 +69,9 @@ def sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, min_cost, updat
     for j in range(0, n_samples):
 
         # # ❯❯❯ Trj command sampling ❯❯❯ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-        # u_std_dev = np.random.normal(loc=0.0, scale=std_dev_cmd, size=(1, n_steps))
-        # u_s = copy.deepcopy(u_nom)
-        # u_s[2, :] = u_s[2, :] + u_std_dev
+        u_std_dev = np.random.normal(loc=0.0, scale=std_dev_cmd, size=(1, n_steps))
+        u_s = copy.deepcopy(u_nom)
+        u_s[2, :] = u_s[2, :] + u_std_dev
         #  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .❮❮❮ Trj command sampling ❮❮❮
 
         traj = []
@@ -144,7 +144,7 @@ def mpc_sampler_optimized(dt: float, n_samples: int, n_steps: int, std_dev_cmd: 
 
 
     # /// Nominal path /////////////////////////////////////////////////////////////////////////////////////////////////
-    traj_nom = compute_nominal_path()
+    traj_nom, u_nom = compute_nominal_path(x_init, n_samples, n_steps, v_x_c, dt)
 
 
     dd, _ = ref_tree.query(traj_nom[:2, :].T, k=1,

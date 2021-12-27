@@ -1,10 +1,14 @@
 # coding=utf-8
 
 import pytest
+import numpy as np
+import pandas as pd
 from src.snow_small_mpc.script.sampler_optimized import mpc_sampler_optimized
 
 import matplotlib.pyplot as plt
 
+
+# (Priority) todo:fixme!!
 
 @pytest.fixture
 def ref_traj_1():
@@ -14,21 +18,30 @@ def ref_traj_1():
     n_steps = int(horizon/dt)
     n_samples = 1000
     std_dev_cmd = 1.5  # rad/s
-    return dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd
+
+    ref_traj_path = 'src/snow_small_mpc/data/boreal_smooth.csv'
+    df = pd.read_csv(ref_traj_path, header=None)
+    # xs = df['Points:1']
+    xs = df[0]
+    # ys = df['Points:0']
+    ys = df[1]
+    ref_traj = np.array([[x, y] for x, y in zip(xs, ys)])
+
+    return dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd, ref_traj
 
 
 def test_mpc_sampler_optimized_init(ref_traj_1):
-    dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd = ref_traj_1
+    dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd, ref_traj = ref_traj_1
 
-    ref_traj, x_init, traj_nom, pool, min_cost_traj = mpc_sampler_optimized(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
+    _, x_init, traj_nom, pool, min_cost_traj = mpc_sampler_optimized(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
 
     return None
 
 
 def test_mpc_sampler_optimized_plot(ref_traj_1):
-    dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd = ref_traj_1
+    dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd, ref_traj = ref_traj_1
 
-    ref_traj, x_init, traj_nom, pool, min_cost_traj = mpc_sampler_optimized(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
+    _, x_init, traj_nom, pool, min_cost_traj = mpc_sampler_optimized(dt, n_samples, n_steps, std_dev_cmd, v_x_c)
 
     fig, ax = plt.subplots(figsize=(10, 10))
 
@@ -51,7 +64,6 @@ def test_mpc_sampler_optimized_plot(ref_traj_1):
     plt.show()
 
     return None
-
 
 # def test_fail():
 #    raise AssertionError

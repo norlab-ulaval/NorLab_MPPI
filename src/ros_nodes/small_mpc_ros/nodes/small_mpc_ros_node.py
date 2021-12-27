@@ -8,9 +8,10 @@ import math
 from nav_msgs.msg import Odometry
 from threading import Thread, Lock
 import time
-from src.sampler import Sampler
-from src.model import Model
+from src.ros_nodes.small_mpc_ros.src.node_sampler import Sampler
+from src.ros_nodes.small_mpc_ros.src.node_model import Model
 import matplotlib.pyplot as plt
+
 
 RATE = 20.0
 TIME_HORIZON = 0.75
@@ -20,7 +21,8 @@ NB_SAMPLES = 10
 COST_MAP_RESOLUTION = 1
 COST_MAP_BUFFER = 20
 COST_FUNCTION_GAIN = 100
-TRAJECTORY_FILE_NAME = "/media/dominic/norlab_dominic/rosbags/snow/fm_12_2021/slide.csv"
+# TRAJECTORY_FILE_NAME = "/media/dominic/norlab_dominic/rosbags/snow/fm_12_2021/slide.csv"
+TRAJECTORY_FILE_NAME = "samples/rosbags/snow/fm_12_2021/slide.csv"
 
 state = None
 state_lock = Lock()

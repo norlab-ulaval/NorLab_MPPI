@@ -4,4 +4,9 @@ import numpy as np
 import math
 
 def mpc_compute_cost(cost_map, pool):
-    for traj in pool:
+
+    raise NotImplementedError   # todo: implement mpc_compute_cost
+
+    # for traj in pool:
+
+
