@@ -2,7 +2,7 @@
 
 import pytest
 import numpy as np
-import pandas as pd
+# import pandas as pd
 from src.snow_small_mpc.script.sampler_optimized import mpc_sampler_optimized
 
 import matplotlib.pyplot as plt
