@@ -2,10 +2,10 @@
 
 import pytest
 import numpy as np
-import pandas as pd
 from src.snow_small_mpc.script.sampler_original import mpc_sampler
+# import pandas as pd
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 #
 # @pytest.fixture
