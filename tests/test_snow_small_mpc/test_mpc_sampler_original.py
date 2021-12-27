@@ -3,6 +3,8 @@
 import pytest
 import numpy as np
 from src.snow_small_mpc.script.sampler_original import mpc_sampler
+
+
 # import pandas as pd
 
 # import matplotlib.pyplot as plt
@@ -68,4 +70,3 @@ from src.snow_small_mpc.script.sampler_original import mpc_sampler
 
 def test_pass():
     assert 1 == 1
-
