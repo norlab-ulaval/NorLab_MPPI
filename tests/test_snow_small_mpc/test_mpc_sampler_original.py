@@ -7,8 +7,8 @@ from src.snow_small_mpc.script.sampler_original import mpc_sampler
 
 import pandas as pd
 
-import matplotlib.pyplot as plt
-
+# import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt    # todo <-- we are here
 
 @pytest.fixture
 def ref_traj_1():

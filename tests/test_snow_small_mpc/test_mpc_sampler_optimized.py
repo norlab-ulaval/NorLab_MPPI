@@ -5,11 +5,12 @@ import numpy as np
 from src.snow_small_mpc.script.sampler_optimized import mpc_sampler_optimized
 
 import pandas as pd
-# import matplotlib.pyplot as plt
 
 
 # (Priority) todo:fixme!!
 # todo:on task end >> unmute next bloc ↓↓
+
+# import matplotlib.pyplot as plt
 #
 # @pytest.fixture
 # def ref_traj_1():
