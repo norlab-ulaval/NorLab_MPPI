@@ -10,7 +10,8 @@ import pandas as pd
 # (Priority) todo:fixme!!
 # todo:on task end >> unmute next bloc ↓↓
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt    # todo <-- we are here
 
 @pytest.fixture
 def ref_traj_1():
