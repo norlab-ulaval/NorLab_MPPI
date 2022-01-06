@@ -61,6 +61,7 @@ def test_mpc_sampler_original_plot(ref_traj_1):
     ax.set_ylabel('x_g')
     ax.legend()
 
+
     plt.show() # todo <-- we are here
 
     return None
