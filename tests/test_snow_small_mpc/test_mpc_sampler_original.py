@@ -65,8 +65,8 @@ def test_mpc_sampler_original_plot(ref_traj_1):
 
     return None
 
-# def test_fail():
-#    raise AssertionError
+## def test_fail():
+##    raise AssertionError
 
 def test_pass():
     assert 1 == 1

@@ -69,8 +69,8 @@ def test_mpc_sampler_optimized_plot(ref_traj_1):
     return None
 
 
-def test_fail():
-   raise AssertionError
+## def test_fail():
+##    raise AssertionError
 
 
 def test_pass():
