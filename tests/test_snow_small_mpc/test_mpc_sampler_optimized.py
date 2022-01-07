@@ -28,6 +28,7 @@ def ref_traj_1():
     return dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd, ref_traj
 
 
+@pytest.mark.skip(reason=" iceboxed ")
 def test_mpc_sampler_optimized_init(ref_traj_1):
     dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd, ref_traj = ref_traj_1
 
@@ -36,6 +37,7 @@ def test_mpc_sampler_optimized_init(ref_traj_1):
     return None
 
 
+@pytest.mark.skip(reason=" iceboxed ")
 def test_mpc_sampler_optimized_plot(ref_traj_1):
     dt, v_x_c, horizon, n_steps, n_samples, std_dev_cmd, ref_traj = ref_traj_1
 
