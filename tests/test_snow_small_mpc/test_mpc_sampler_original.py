@@ -6,9 +6,7 @@ from src.snow_small_mpc.script.sampler_original import mpc_sampler
 
 
 import pandas as pd
-
-# import matplotlib.pyplot as plt
-from matplotlib import pyplot as plt    # todo <-- we are here
+from matplotlib import pyplot as plt
 
 @pytest.fixture
 def ref_traj_1():
@@ -65,8 +63,3 @@ def test_mpc_sampler_original_plot(ref_traj_1):
 
     return None
 
-## def test_fail():
-##    raise AssertionError
-
-def test_pass():
-    assert 1 == 1

@@ -5,13 +5,8 @@ import numpy as np
 from src.snow_small_mpc.script.sampler_optimized import mpc_sampler_optimized
 
 import pandas as pd
+from matplotlib import pyplot as plt
 
-
-# (Priority) todo:fixme!!
-# todo:on task end >> unmute next bloc ↓↓
-
-# import matplotlib.pyplot as plt
-from matplotlib import pyplot as plt    # todo <-- we are here
 
 @pytest.fixture
 def ref_traj_1():
@@ -67,11 +62,3 @@ def test_mpc_sampler_optimized_plot(ref_traj_1):
     plt.show()
 
     return None
-
-
-## def test_fail():
-##    raise AssertionError
-
-
-def test_pass():
-    assert 1 == 1
