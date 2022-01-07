@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import pytest
-# from try_pytorch_copy import verify_pytorch_install, verify_pytorch_cuda_install # (CRITICAL) todo:investigate >> temporary fix (!)
-from src.container_related.try_pytorch import verify_pytorch_install, verify_pytorch_cuda_install # (CRITICAL) todo:investigate >> temporary fix (!)
+from src.container_related.try_pytorch import verify_pytorch_install, verify_pytorch_cuda_install
 
 
 def test_verify_pytorch_install_PASS():
@@ -15,6 +14,6 @@ def test_verify_pytorch_cuda_install():
     return None
 
 
-def test_fail():
+def test_pytest_expect_failure():
     with pytest.raises(AssertionError):
         raise AssertionError
