@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.spatial import KDTree
 
 
-def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
+def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c, ref_traj):
 
     # /// Utility function /////////////////////////////////////////////////////////////////////////////////////////////
     def update_R(R, theta):
@@ -16,7 +16,7 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
         R[1, 0] = sin_theta
         return R
 
-    def sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, min_cost):
+    def sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, min_cost, ref_tree):
         R_init = np.eye(3)
         pool = []
         cost_list = []
@@ -42,10 +42,10 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
             traj = np.transpose(np.asarray(traj))
             pool.append(traj)
 
-            # dd, _ = ref_tree.query(traj[:2, :].T, k=1,
+            dd, _ = ref_tree.query(traj[:2, :].T, k=1,
                                    # workers=-1,
-                                   # )
-            # cost = np.sum(dd)
+                                   )
+            cost = np.sum(dd)
 
             if j > min_cost_traj and cost < min_cost:
                 min_cost_traj = j
@@ -53,11 +53,19 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
         return pool, min_cost_traj, cost
 
     # /// initialize state /////////////////////////////////////////////////////////////////////////////////////////////
+
     x_init = np.array([0.0, 0.0, 0.0])
     curr_x = x_init
+
+    # ❯❯❯ Nominal trajectory ❯❯❯ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+    # (!) As discuss with Luc and Simon, the MPC box should receive in input a nominal trajectory express in therme of
+    #  state only otherwise, the problem of fiding the optimal command u for t+1 would be solved already.
     u_nom = np.zeros((3, n_steps))
     u_nom[0, :] = v_x_c
     u_nom[2, :] = -np.pi/2
+
+    #  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .❮❮❮ Nominal trajectory ❮❮❮
+
     traj_nom = []
     R_init = np.eye(3)
     for i in range(0, n_steps):
@@ -67,12 +75,16 @@ def mpc_sampler(dt, n_samples, n_steps, std_dev_cmd, v_x_c):
         new_x = R.T@dx*dt + curr_x
         traj_nom.append(new_x)
         curr_x = new_x
+
+    # create kdtree from traj
+    ref_tree = KDTree(ref_traj)
+
     traj_nom = np.transpose(np.asarray(traj_nom))
-    # dd, _ = ref_tree.query(traj_nom[:2, :].T, k=1,
+    dd, _ = ref_tree.query(traj_nom[:2, :].T, k=1,
                            # workers=-1,
-    #                        )
-    # nom_cost = np.sum(dd)
+                           )
+    nom_cost = np.sum(dd)
     # %timeit sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, nom_cost)
-    pool, min_cost_traj, cost = sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, nom_cost)
+    pool, min_cost_traj, cost = sample_trajs(u_nom, x_init, n_samples, n_steps, std_dev_cmd, nom_cost, ref_tree)
 
     return update_R, x_init, traj_nom, pool, min_cost_traj
