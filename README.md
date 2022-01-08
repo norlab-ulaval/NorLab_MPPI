@@ -6,7 +6,7 @@
 <br>
 </div>
 
-# _/// NorLab_MPPI //////////////////////////////////////////_
+# _NorLab_MPPI_
 A NorLab reimplementation of the Model Predictive Path-Integral control algorithm from the [Georgia Tech AutoRally](https://github.com/AutoRally/autorally) project
 
 <div align="left">
@@ -22,3 +22,5 @@ A NorLab reimplementation of the Model Predictive Path-Integral control algorith
 </p>
 </div>
 <br>
+
+Master branch: ![TeamCity build status](http://132.203.26.162:8111/app/rest/builds/buildType:id:NorLabMppi_MasterBranchNightlyBuild/statusIcon.svg)
