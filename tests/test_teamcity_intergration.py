@@ -3,11 +3,11 @@
 import pytest
 
 
-# test 9 remote run
+# test 10 try merging from feature branch to master (expect fail)
 
-# def test_fail():
-#     raise AssertionError
+def test_fail():
+    raise AssertionError
 
 
-def test_PASS():
-    assert True
+# def test_PASS():
+#     assert True
