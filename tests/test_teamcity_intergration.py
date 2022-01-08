@@ -3,7 +3,7 @@
 import pytest
 
 
-# test 10 try merging from feature branch to master (expect fail)
+# test 11 refactor build step
 
 def test_fail():
     raise AssertionError
