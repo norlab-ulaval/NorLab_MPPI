@@ -6,7 +6,7 @@
 <br>
 </div>
 
-# _/// NorLab_MPPI //////////////////////////////////////////_
+# _NorLab_MPPI_
 A NorLab reimplementation of the Model Predictive Path-Integral control algorithm from the [Georgia Tech AutoRally](https://github.com/AutoRally/autorally) project
 
 <div align="left">
