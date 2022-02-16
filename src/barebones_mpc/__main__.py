@@ -25,21 +25,10 @@ parser.add_argument('--execute', action='store_true', help='Execute barebones MP
 parser.add_argument('--testSpec', action='store_true', help='Flag for automated continuous integration test')
 
 # # ››› Parser references ›››...........................................................................................
-# parser.add_argument('-r', '--render_training', action='store_true',
-#                     help='(Training option) Watch the agent execute trajectories while he is on traning duty')
-#
-# parser.add_argument('-p', '--play_for', type=int, default=20,
-#                     help='(Playing option) Max playing trajectory, default=20')
-#
-# parser.add_argument('-d', '--discounted', default=None, type=bool,
-#                     help='(Training option) Force training execution with discounted reward-to-go')
-#
-# parser.add_argument('--harderEnvCoeficient', type=float, default=1.6,
-#                     help='Harder environment coeficient (if it can be applied)')
-#
-# parser.add_argument('--record', action='store_true',
-#                     help='(Playing option) Record trained agent playing in a environment')
-
+# parser.add_argument('--intDefaultExample', type=int, default=20, help='')
+# parser.add_argument('--emptyBoolExample', default=None, type=bool, help='')
+# parser.add_argument('--floatExample', type=float, default=1.6, help='')
+# parser.add_argument('-b', '--BoolExample', action='store_true', help='')
 # # ...........................................................................................‹‹‹ Parser references ‹‹‹
 
 
