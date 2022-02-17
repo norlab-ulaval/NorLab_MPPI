@@ -7,7 +7,7 @@ class StandardDevSampler(AbstractSampler):
         self.input_dimension = input_dimension
         self.sample_length = sample_length
         self.init_state = init_state
-        self.std_dev = std_dev
+        self.std_dev = std_dev #TODO : Define std_Dev for multiple dimensions of input
         self.sample_input = np.empty((self.sample_length, self.number_samples+1, self.input_dimension))
 
         self.model = model
