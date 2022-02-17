@@ -21,12 +21,15 @@ def sampler_init_params():
 
     return time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, init_state, std_dev
 
-def test_mpc_sampler_original_init(sampler_init_params):
+def test_mpc_stddev_init(sampler_init_params):
     time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, init_state, std_dev = sampler_init_params
 
     abstract_model = AbstractModel
     standard_dev_sampler = StandardDevSampler(abstract_model, number_samples, input_dimension, sample_length, init_state, std_dev)
     return None
+
+def test_mpc_stddev_sample(sample_init_params):
+    pass
 
 def test_manualy_triggered_FAIL():
     assert False
