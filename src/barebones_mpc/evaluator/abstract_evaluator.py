@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
+
 class AbstractEvaluator(metaclass=ABCMeta):
+
     def __init__(self):
         self.state_weight = None
         self.input_weight = None
@@ -40,4 +42,20 @@ class AbstractEvaluator(metaclass=ABCMeta):
         :param final_state: final state array
         :return final_state_cost: final state cost
         """
+        pass
+
+
+class MockEvaluator(AbstractEvaluator):
+    """ For testing purpose only"""
+
+    def sample_costs(self, sample_input, sample_states):
+        pass
+
+    def input_cost(self, input):
+        pass
+
+    def state_cost(self, state):
+        pass
+
+    def final_state_cost(self, final_state):
         pass

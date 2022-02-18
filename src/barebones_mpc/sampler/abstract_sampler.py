@@ -1,7 +1,9 @@
 from abc import ABCMeta, abstractmethod
 from src.barebones_mpc.model.abstract_model import AbstractModel
 
+
 class AbstractSampler(metaclass=ABCMeta):
+
     def __init__(self, model):
         self.number_samples = None
         self.sample_length = None
@@ -29,4 +31,14 @@ class AbstractSampler(metaclass=ABCMeta):
         :param init_state: the initial state array
         :return: sample state array
         """
+        pass
+
+
+class MockSampler(AbstractSampler):
+    """ For testing purpose only"""
+
+    def sample_inputs(self, nominal_input):
+        pass
+
+    def sample_states(self, sample_input, init_state):
         pass
