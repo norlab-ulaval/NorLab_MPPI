@@ -52,17 +52,22 @@ class ModelPredictiveControler(object):
         self.evaluator = evaluator_cls()
         self.selector = selector_cls()
 
-        # ... Feedback loop ............................................................................................
+    def execute(self, state_t0: Any) -> None:
+        """ Execute feedback loop
 
-        self.execute(state_t0)
-
-    def execute(self, state_t0):
+        :param state_t0: (optional) will be generated from the environment if not provided
+        """
         if state_t0 is not None:
             raise NotImplementedError("(CRITICAL) todo ← Feeback loop initial state is given by the environment")
 
         hparam_horizon = self.config['hparam']['experimental-hparam']['horizon']
         for global_step in range(hparam_horizon):
+            raise NotImplementedError  # (Priority) todo:implement <-- we are here
             pass
+
+    def _setup_environment(self) -> None:
+        raise NotImplementedError   # todo: implement
+        return None
 
     def _import_controler_component_class(self, component_key: str) -> Union[
         Type[AbstractModel], Type[AbstractSampler], Type[AbstractEvaluator], Type[AbstractSelector]]:
