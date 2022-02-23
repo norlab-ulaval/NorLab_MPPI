@@ -9,12 +9,13 @@ controler-component:
   selector: src.barebones_mpc.selector.abstract_selector.MockSelector
 hparam:
   experimental-hparam:
-    horizon: 15
+    experimental_window: 15
     seed: 0
     show_plot: true
   sampler-hparam:
     number_samples: 15
-    sample_length: 50
+    horizon: 50
+    steps_per_prediction: 10.0
   model-hparam:
     <placeholder>: 0
 constraints:

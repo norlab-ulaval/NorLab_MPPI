@@ -11,7 +11,7 @@ def test_config_file_test_schema_PASS():
 
     print(config)
     assert type(config) is dict
-    assert config['hparam']['experimental-hparam']['horizon']
+    assert config['hparam']['experimental-hparam']['experimental_window']
 
 
 @pytest.mark.skip(reason="wait until `default_test_config.yaml` is done implementing")
@@ -20,5 +20,5 @@ def test_config_file_default_PASS():
         config = dict(yaml.safe_load(f))
         print(config)
         assert type(config) is dict
-        assert config['hparam']['experimental-hparam']['horizon']
+        assert config['hparam']['experimental-hparam']['experimental_window']
 
