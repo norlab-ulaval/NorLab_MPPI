@@ -6,6 +6,7 @@ class AbstractSampler(metaclass=ABCMeta):
 
     def __init__(self, model):
         self.number_samples = None
+        self.input_dimension = None
         self.sample_length = None
         self.init_state = None
 

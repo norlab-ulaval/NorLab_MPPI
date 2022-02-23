@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 
 class AbstractModel(metaclass=ABCMeta):
     def __init__(self):
-        self.state_dim = None
-        self.input_dim = None
+        self.state_dimension = None
+        self.input_dimension = None
         self.time_step = None
 
     @abstractmethod
