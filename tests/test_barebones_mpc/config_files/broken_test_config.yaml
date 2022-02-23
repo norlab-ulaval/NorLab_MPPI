@@ -1,0 +1,30 @@
+# Norlab-MPPI barebones_mpc config
+---
+config-name: 'broken'
+config-short-description: ""
+controler-component:
+  model: src.barebones_mpc.model.abstract_model
+  sampler: src.barebones_mpc.sampler.abstract_sampler
+  evaluator: src.barebones_mpc.evaluator.abstract_evaluator
+  selector: src.barebones_mpc.selector.abstract_selector
+hparam:
+  experimental-hparam:
+    horizon: 15
+    seed: 0
+    show_plot: true
+  sampler-hparam:
+    number_samples: 15
+    sample_length: 50
+  model-hparam:
+    <placeholder>: 0
+constraints:
+  input-constraint:
+    <input-space-1-placeholder>:
+      uper-bound: 1.0
+      lowwer-bound: -1.0
+  state-constraint:
+    <state-space-1-placeholder>:
+      uperbound: 1.0
+      lowwer-bound: -1.0
+experimental-notes: |
+  Nothing for now

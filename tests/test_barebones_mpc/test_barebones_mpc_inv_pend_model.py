@@ -29,6 +29,8 @@ def test_mpc_inv_pend_model_init(model_init_params):
     inv_pendulum_model = InvPendulumModel(time_step, number_samples, sample_length, cart_mass, pendulum_mass)
     return None
 
+
+@pytest.mark.skip(reason="TODO: dev in progress")
 def test_mpc_inv_pend_model_predict(model_init_params):
     time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, init_state, cart_mass, pendulum_mass, sample_input = model_init_params
 

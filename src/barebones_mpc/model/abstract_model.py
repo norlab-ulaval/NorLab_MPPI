@@ -25,3 +25,13 @@ class AbstractModel(metaclass=ABCMeta):
         :return: predicted state array
         """
         pass
+
+
+class MockModel(AbstractModel):
+    """ For testing purpose only"""
+
+    def predict_states(self, init_state, sample_input):
+        pass
+
+    def _predict(self, init_state, input):
+        pass
