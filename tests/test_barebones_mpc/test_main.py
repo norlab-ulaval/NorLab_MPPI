@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import pytest
-from src.utils.ttd_related import is_run_on_a_teamcity_continuous_integration_server
+from src.utils.tdd_related import is_run_on_a_teamcity_continuous_integration_server
 
 
 pytestmark = pytest.mark.automated_test
