@@ -100,10 +100,10 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def reset(self) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
+    def reset(self) -> Union[np.ndarray, List[int]]:
         """
         Reset the state of the environment to an initial state at timestep_0
-        :return: the observation at timestep_0 (observation, reward, done, info)
+        :return: the observation at timestep_0
         """
         pass
 

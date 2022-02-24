@@ -7,6 +7,13 @@ controler-component:
   sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
   selector: src.barebones_mpc.selector.abstract_selector.MockSelector
+environment:
+  type: 'gym'
+  name: 'Pendulum-v1'
+  observation_space:
+    max_speed: 8
+  action_space:
+    max_torque: 2.0
 hparam:
   experimental-hparam:
     experimental_window: 15

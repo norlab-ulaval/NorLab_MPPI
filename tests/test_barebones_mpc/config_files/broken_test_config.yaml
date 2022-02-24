@@ -9,7 +9,11 @@ controler-component:
   selector: src.barebones_mpc.selector.abstract_selector
 environment:
   type: 'gym'
-  name: 'Pendulum-v0'
+  name: 'Pendulum-v1'
+  observation_space:
+    max_speed: 8
+  action_space:
+    max_torque: 2.0
 hparam:
   experimental-hparam:
     experimental_window: 15
