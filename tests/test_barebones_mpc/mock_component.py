@@ -5,6 +5,7 @@ from src.barebones_mpc.model.abstract_model import AbstractModel
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 from src.barebones_mpc.selector.abstract_selector import AbstractSelector
 
+# todo remove `mock_component.py`
 
 class MockModel(AbstractModel):
 

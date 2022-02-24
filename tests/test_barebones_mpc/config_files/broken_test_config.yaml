@@ -7,14 +7,18 @@ controler-component:
   sampler: src.barebones_mpc.sampler.abstract_sampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator
   selector: src.barebones_mpc.selector.abstract_selector
+environment:
+  type: 'gym'
+  name: 'Pendulum-v0'
 hparam:
   experimental-hparam:
-    horizon: 15
+    experimental_window: 15
     seed: 0
     show_plot: true
   sampler-hparam:
     number_samples: 15
-    sample_length: 50
+    horizon: 50
+    steps_per_prediction: 10.0
   model-hparam:
     <placeholder>: 0
 constraints:

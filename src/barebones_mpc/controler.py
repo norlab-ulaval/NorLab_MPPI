@@ -60,10 +60,9 @@ class ModelPredictiveControler(object):
         if state_t0 is not None:
             raise NotImplementedError("(CRITICAL) todo ← Feeback loop initial state is given by the environment")
 
-        hparam_horizon = self.config['hparam']['experimental-hparam']['experimental_window']
-        for global_step in range(hparam_horizon):
-            raise NotImplementedError  # (Priority) todo:implement <-- we are here
-            pass
+        experimental_window = self.config['hparam']['experimental-hparam']['experimental_window']
+        for global_step in range(experimental_window):
+            self.sampler.sample_inputs()
 
     def _setup_environment(self) -> None:
         raise NotImplementedError   # todo: implement
