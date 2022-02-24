@@ -119,6 +119,42 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
 class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
 
     def __init__(self, config_dict):
+        """
+        Adapter for gym environment. Specification are fetch from the configuration file
+        Ex:
+            >>> environment:
+            >>> type: 'gym'
+            >>> name: 'Pendulum-v1'
+            >>> observation_space:
+            >>>   max_speed: 8
+            >>> action_space:
+            >>>   max_torque: 2.0
+
+        ---
+        # Ref Pendulum-v1 gym environment
+        Space definition from gym Pendulum-v1
+        at https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py
+
+        ### Action Space
+        The action is the torque applied to the pendulum.
+
+        | Num | Action | Min  | Max |
+        |-----|--------|------|-----|
+        | 0   | Torque | -2.0 | 2.0 |
+
+        ### Observation Space
+        The observations correspond to the x-y coordinate of the pendulum's end, and its angular velocity.
+
+        | Num | Observation      | Min  | Max |
+        |-----|------------------|------|-----|
+        | 0   | x = cos(theta)   | -1.0 | 1.0 |
+        | 1   | y = sin(angle)   | -1.0 | 1.0 |
+        | 2   | Angular Velocity | -8.0 | 8.0 |
+
+        ---
+
+        :param config_dict:
+        """
         super().__init__(config_dict=config_dict)
 
     def _make(self) -> Type[gym.wrappers.time_limit.TimeLimit]:

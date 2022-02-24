@@ -95,7 +95,7 @@ class ModelPredictiveControler(object):
 
     def _init_nominal_input(self):
         # pass
-        raise NotImplementedError  # (CRITICAL) todo:implement
+        raise NotImplementedError  # (CRITICAL) todo:implement <-- we are here
 
     def _import_controler_component_class(self, component_key: str) -> Union[
         Type[AbstractModel], Type[AbstractSampler], Type[AbstractEvaluator], Type[AbstractSelector]]:
