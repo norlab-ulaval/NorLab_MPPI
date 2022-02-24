@@ -64,7 +64,9 @@ class TestGymEnvironmentAdapter:
     @pytest.fixture(scope="function")
     def setup_GymEnvironmentAdapter(self, setup_mock_config_dict):
         test_config_dict = setup_mock_config_dict
-        return GymEnvironmentAdapter(test_config_dict)
+        env = GymEnvironmentAdapter(test_config_dict)
+        yield env
+        env.close()
 
     def test__make(self, setup_GymEnvironmentAdapter):
         assert isinstance(setup_GymEnvironmentAdapter._env, gym.wrappers.time_limit.TimeLimit)

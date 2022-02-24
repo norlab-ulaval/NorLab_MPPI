@@ -111,6 +111,10 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
     def render(self, mode: str = 'human') -> None:
         pass
 
+    @abstractmethod
+    def close(self) -> None:
+        pass
+
 
 class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
 
@@ -135,3 +139,10 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
 
     def render(self, mode: str = 'human') -> None:
         return self._env.render(mode=mode)
+
+    def close(self) -> None:
+        return self._env.close()
+
+    def __del__(self) -> None:
+        self._env.close()
+        return None
