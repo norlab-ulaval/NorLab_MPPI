@@ -55,6 +55,7 @@ class ModelPredictiveControler(object):
 
         :param state_t0: (optional) will be generated from the environment if not provided
         """
+
         observations = []
         actions = []
         rewards = []
@@ -69,6 +70,10 @@ class ModelPredictiveControler(object):
         nominal_input = self._init_nominal_input()
         experimental_window = self.config['hparam']['experimental-hparam']['experimental_window']
         for global_step in range(experimental_window):
+
+            if self.config['environment']['headless']:
+                self.environment.render()
+
             sample_input = self.sampler.sample_inputs(nominal_input=nominal_input)
             sample_states = self.sampler.sample_states(sample_input=sample_input, init_state=observation)
             sample_cost = self.evaluator.sample_costs(sample_input=sample_input, sample_states=sample_states)
@@ -88,14 +93,16 @@ class ModelPredictiveControler(object):
             observation = next_observation
 
         self.environment.close()
+
+
         return observations, actions, rewards
 
     def _setup_environment(self) -> Type[AbstractEnvironmentAdapter]:
         return make_environment_adapter(self.config)
 
     def _init_nominal_input(self):
-        # pass
-        raise NotImplementedError  # (CRITICAL) todo:implement <-- we are here
+        pass
+        # raise NotImplementedError  # (CRITICAL) todo:implement <-- we are here
 
     def _import_controler_component_class(self, component_key: str) -> Union[
         Type[AbstractModel], Type[AbstractSampler], Type[AbstractEvaluator], Type[AbstractSelector]]:

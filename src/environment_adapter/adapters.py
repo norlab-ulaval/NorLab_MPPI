@@ -1,8 +1,11 @@
 # coding=utf-8
 from abc import ABCMeta, abstractmethod
 from typing import Union, Any, Type, Tuple, List, Dict
+import os
 import gym
+from gym.wrappers.monitoring.video_recorder import VideoRecorder
 import numpy as np
+from pyvirtualdisplay import Display
 
 
 def make_environment_adapter(config_dict) -> Any:
@@ -17,10 +20,20 @@ def make_environment_adapter(config_dict) -> Any:
 
 
 class AbstractEnvironmentAdapter(metaclass=ABCMeta):
+    _rollout_idx: int
+    _record: bool
+    _headless: bool
+    _virtual_display: Display
 
-    def __init__(self, config_dict):
+    def __init__(self, config_dict: dict):
         self._config_dict = config_dict
+        self._record = self._config_dict['record']
+        self._headless = self._config_dict['headless']
+        if self._headless and self._record and (self._config_dict['environment']['rendering_interval'] > 0):
+            self._virtual_display = Display(visible=False, size=(1400, 900))
+            self._virtual_display.start()
 
+        self._rollout_idx = 0
         self._env = self._make()
         self.observation_space = self._init_observation_space()
         self.action_space = self._init_action_space()
@@ -29,6 +42,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
     def _make(self) -> Any:
         """
         Implement every step that must be executed to produce an instance of the environment
+        Executed once during init
         """
         pass
 
@@ -105,6 +119,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         Reset the state of the environment to an initial state at timestep_0
         :return: the observation at timestep_0
         """
+
         pass
 
     @abstractmethod
@@ -112,11 +127,28 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def close(self) -> None:
+    def _close(self) -> None:
+        """
+        Subclass own teardown process executed at environment clossing
+        """
         pass
+
+    def close(self) -> None:
+        """
+        Teardown process executed at environment clossing
+        """
+        self._close()
+        if self._headless and self._record and (self._config_dict['environment']['rendering_interval'] > 0):
+            self._virtual_display.stop()
+        return None
+
+    def __del__(self) -> None:
+        self.close()
+        return None
 
 
 class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
+    _recorder: VideoRecorder
 
     def __init__(self, config_dict):
         """
@@ -158,7 +190,20 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         super().__init__(config_dict=config_dict)
 
     def _make(self) -> Type[gym.wrappers.time_limit.TimeLimit]:
+        config_name = self._config_dict['config-name'].replace(" ", "_")
         env = gym.make(self._config_dict['environment']['name'])
+        if self._record:
+            print('os.getcwd() >>>', os.getcwd())
+
+            video_recording_path = os.path.join('experiment', config_name, 'video')
+            if not os.path.exists(video_recording_path):
+                os.makedirs(video_recording_path)
+
+            recording_name = '{}_{}.mp4'.format(config_name, self._rollout_idx)
+            recording_path = os.path.join(video_recording_path, recording_name)
+
+            self._recorder = VideoRecorder(env, recording_path)
+
         return env
 
     def _init_observation_space(self) -> Type[gym.spaces.Space]:
@@ -171,14 +216,18 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         return self._env.step(action)
 
     def reset(self) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
+        self._rollout_idx += 1
         return self._env.reset()
 
     def render(self, mode: str = 'human') -> None:
-        return self._env.render(mode=mode)
+        if self._record:
+            self._recorder.capture_frame()
+        else:
+            self._env.render(mode=mode)
+        return self._env
 
-    def close(self) -> None:
-        return self._env.close()
-
-    def __del__(self) -> None:
+    def _close(self) -> None:
+        if self._record:
+            self._recorder.close()
         self._env.close()
         return None
