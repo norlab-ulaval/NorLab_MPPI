@@ -37,8 +37,16 @@ def test_state_t0_is_None_PASS(setup_mock_barebones_mpc):
     ModelPredictiveControler(config_path=config_path)
 
 
-def test_execute_PASS(setup_mock_barebones_mpc):
+def test_execute_headless_PASS(setup_mock_barebones_mpc):
     config_path = setup_mock_barebones_mpc
     mpc = ModelPredictiveControler(config_path=config_path)
     mpc.execute()
+
+
+@pytest.mark.skip(reason="mute")
+def test_execute_record_PASS(setup_mock_barebones_mpc):
+    # config_path = setup_mock_barebones_mpc
+    # mpc = ModelPredictiveControler(config_path=config_path)
+    # mpc.execute()
+    assert False
 

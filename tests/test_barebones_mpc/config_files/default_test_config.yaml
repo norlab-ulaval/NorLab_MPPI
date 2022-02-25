@@ -7,7 +7,7 @@ controler-component:
   sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
   selector: src.barebones_mpc.selector.abstract_selector.MockSelector
-headless: true
+force_headless_mode: true
 record: false
 environment:
   type: 'gym'

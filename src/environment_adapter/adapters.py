@@ -28,7 +28,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
     def __init__(self, config_dict: dict):
         self._config_dict = config_dict
         self._record = self._config_dict['record']
-        self._headless = self._config_dict['headless']
+        self._headless = self._config_dict['force_headless_mode']
         if self._headless and self._record and (self._config_dict['environment']['rendering_interval'] > 0):
             self._virtual_display = Display(visible=False, size=(1400, 900))
             self._virtual_display.start()
@@ -155,12 +155,13 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         Adapter for gym environment. Specification are fetch from the configuration file
         Ex:
             >>> environment:
-            >>> type: 'gym'
-            >>> name: 'Pendulum-v1'
-            >>> observation_space:
-            >>>   max_speed: 8
-            >>> action_space:
-            >>>   max_torque: 2.0
+            >>>   type: 'gym'
+            >>>   name: 'Pendulum-v1'
+            >>>   rendering_interval: 1
+            >>>   observation_space:
+            >>>     max_speed: 8
+            >>>   action_space:
+            >>>     max_torque: 2.0
 
         ---
         # Ref Pendulum-v1 gym environment
@@ -220,9 +221,9 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         return self._env.reset()
 
     def render(self, mode: str = 'human') -> None:
-        if self._record:
+        if self._record and (self._config_dict['environment']['rendering_interval'] > 0):
             self._recorder.capture_frame()
-        else:
+        elif not self._headless:
             self._env.render(mode=mode)
         return self._env
 

@@ -71,7 +71,7 @@ class ModelPredictiveControler(object):
         experimental_window = self.config['hparam']['experimental-hparam']['experimental_window']
         for global_step in range(experimental_window):
 
-            if self.config['environment']['headless']:
+            if self.config['force_headless_mode']:
                 self.environment.render()
 
             sample_input = self.sampler.sample_inputs(nominal_input=nominal_input)
@@ -93,7 +93,6 @@ class ModelPredictiveControler(object):
             observation = next_observation
 
         self.environment.close()
-
 
         return observations, actions, rewards
 
