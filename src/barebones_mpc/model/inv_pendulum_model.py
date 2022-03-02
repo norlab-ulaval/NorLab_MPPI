@@ -19,6 +19,7 @@ class InvPendulumModel(AbstractModel):
         self.cart_mass = cart_mass
         self.pendulum_mass = pendulum_mass
         self.epsilon = pendulum_mass / (cart_mass + pendulum_mass)
+        print(self.epsilon)
 
         self.state_transition_matrix = np.array([[0, 1, 0, 0],
                                                  [0, 0, -self.epsilon, 0],
@@ -26,7 +27,7 @@ class InvPendulumModel(AbstractModel):
                                                  [0, 0, 1, 0]])
         self.input_transition = np.array([0, 1, 0, -1]).reshape((4 , 1))
 
-        self.sample_states = np.empty((self.sample_length, self.number_samples+1, self.state_dimension))
+        self.sample_states = np.empty((self.sample_length+1, self.number_samples, self.state_dimension))
 
     def predict_states(self, init_state, sample_input):
         """ predicts a sample state array based on a nominal input array
@@ -36,9 +37,9 @@ class InvPendulumModel(AbstractModel):
         :return: sample state array
         """
         self.sample_states[0, :, :] = init_state
-        for j in range(0, self.number_samples+1):
-            for i in range(1, self.sample_length):
-                self.sample_states[i, j, :] = self._predict(self.sample_states[i-1, j, :], sample_input[i, j, :])[:,0]
+        for j in range(0, self.number_samples):
+            for i in range(1, self.sample_length+1):
+                self.sample_states[i, j, :] = self._predict(self.sample_states[i-1, j, :], sample_input[i-1, j, :])[:,0]
 
         return self.sample_states
 
