@@ -54,7 +54,7 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
     standard_dev_sampler = StandardDevSampler(inv_pendulum_model, number_samples, input_dimension, sample_length, init_state, std_dev)
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
-    assert sample_input.shape == (sample_length, number_samples+1, input_dimension)
+    assert sample_input.shape == (sample_length+1, number_samples, input_dimension)
     return None
 
 def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_params):
@@ -65,7 +65,7 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
     sample_state = standard_dev_sampler.sample_states(sample_input, init_state)
-    assert sample_state.shape == (sample_length, number_samples+1, state_dimension)
+    assert sample_state.shape == (sample_length+1, number_samples, state_dimension)
     return None
 
 @pytest.fixture
