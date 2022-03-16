@@ -1,27 +1,25 @@
 # coding=utf-8
 
 import pytest
-import gym
-import yaml
 
-from src.barebones_mpc.controler import ModelPredictiveControler
+from src.barebones_mpc.controller.controler import ModelPredictiveControler
 
 
 @pytest.fixture(scope="function")
 def setup_mock_barebones_mpc():
-    config_path = "tests/test_barebones_mpc/config_files/default_test_config.yaml"
+    config_path = "tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
     return config_path
 
 # model_cls=MockModel, sampler_cls=MockSampler, evaluator_cls=MockEvaluator, selector_cls=MockSelector,
 
-@pytest.mark.skip(reason="Todo: mute for now")
+# @pytest.mark.skip(reason="Todo: mute for now")
 def test_ModelPredictiveControler_init_PASS(setup_mock_barebones_mpc):
     config_path = setup_mock_barebones_mpc
     ModelPredictiveControler(config_path=config_path)
 
 
 def test_ModelPredictiveControler_init_arg_config_path_exist_FAIL(setup_mock_barebones_mpc):
-    config_path = "tests/test_barebones_mpc/BROKEN_PATH/default_test_config.yaml"
+    config_path = "tests/test_barebones_mpc/BROKEN_PATH/default_test_config_Pendulum-v1.yaml"
     with pytest.raises(AssertionError):
         ModelPredictiveControler(config_path=config_path)
 

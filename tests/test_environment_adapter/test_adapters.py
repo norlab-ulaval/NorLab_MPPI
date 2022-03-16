@@ -13,9 +13,17 @@ EA = TypeVar('EA', AbstractEnvironmentAdapter, GymEnvironmentAdapter)
 
 
 @pytest.fixture(scope="module")
-def setup_mock_config_dict():
+def setup_mock_config_dict_CartPole():
+    """ Test config file specify environment as gym CartPole-v1 """
+    config_path = "tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
+    with open(config_path, 'r') as f:
+        config_dict = dict(yaml.safe_load(f))
+    return config_dict
+
+@pytest.fixture(scope="module")
+def setup_mock_config_dict_Pendulum():
     """ Test config file specify environment as gym Pendulum-v1 """
-    config_path = "tests/test_barebones_mpc/config_files/default_test_config.yaml"
+    config_path = "tests/test_barebones_mpc/config_files/default_test_config_Pendulum-v1.yaml"
     with open(config_path, 'r') as f:
         config_dict = dict(yaml.safe_load(f))
     return config_dict
@@ -26,8 +34,8 @@ def setup_mock_config_dict():
 class TestAbstractEnvironmentAdapter:
 
     @pytest.fixture(scope="module")
-    def setup_MockEnvironmentAdapter(self, setup_mock_config_dict: dict) -> EA:
-        test_config_dict = setup_mock_config_dict
+    def setup_MockEnvironmentAdapter(self, setup_mock_config_dict_CartPole) -> EA:
+        test_config_dict = setup_mock_config_dict_CartPole
 
 
         class MockEnvironmentAdapter(AbstractEnvironmentAdapter):
@@ -41,7 +49,7 @@ class TestAbstractEnvironmentAdapter:
             def _make(self) -> Any:
                 return True
 
-            def step(self, action) -> Tuple[Union[np.ndarray, Any], Union[int, float], bool, Dict]:
+            def step(self, input) -> Tuple[Union[np.ndarray, Any], Union[int, float], bool, Dict]:
                 pass
 
             def reset(self) -> Union[np.ndarray, List[int]]:
@@ -96,15 +104,15 @@ def test_gym_headless_rendering_box2d(setup_virtual_display):
 class TestGymEnvironmentAdapter:
 
     @pytest.fixture(scope="function")
-    def gym_env_adapter_fixture(self, setup_mock_config_dict) -> EA:
-        test_config_dict = setup_mock_config_dict
+    def gym_env_adapter_fixture(self, setup_mock_config_dict_CartPole) -> EA:
+        test_config_dict = setup_mock_config_dict_CartPole
         env = GymEnvironmentAdapter(test_config_dict)
         yield env
         env.close()
 
     @pytest.fixture(scope="function")
-    def gym_env_adapter_fixture_record_true(self, setup_mock_config_dict):
-        test_config_dict = setup_mock_config_dict
+    def gym_env_adapter_fixture_record_true(self, setup_mock_config_dict_CartPole):
+        test_config_dict = setup_mock_config_dict_CartPole
         test_config_dict['record'] = True
         env = GymEnvironmentAdapter(test_config_dict)
         yield env
@@ -159,5 +167,5 @@ class TestGymEnvironmentAdapter:
         raise FileNotFoundError   # todo: the assert passed but can't locate the recorded video <--
 
 
-def test_make_environment_adapter_gym(setup_mock_config_dict):
-    assert isinstance(make_environment_adapter(setup_mock_config_dict)._env, gym.wrappers.time_limit.TimeLimit)
+def test_make_environment_adapter_gym(setup_mock_config_dict_CartPole):
+    assert isinstance(make_environment_adapter(setup_mock_config_dict_CartPole)._env, gym.wrappers.time_limit.TimeLimit)

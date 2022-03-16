@@ -42,5 +42,5 @@ class MockEvaluator(AbstractEvaluator):
 
 class MockSelector(AbstractSelector):
 
-    def select_next_input(self, sample_input, sample_state, sample_cost):
+    def select_next_input(self, sample_cost):
         pass

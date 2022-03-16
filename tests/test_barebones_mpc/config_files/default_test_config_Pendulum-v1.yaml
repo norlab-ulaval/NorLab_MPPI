@@ -1,8 +1,8 @@
 # Norlab-MPPI barebones_mpc config
 ---
-config-name: 'default'
-config-short-description: ""
-controler-component:
+config_name: 'default Pendulum-v1'
+config_short_description: "gym Pendulum-v1 test configuragtion"
+controler_component:
   model: src.barebones_mpc.model.abstract_model.MockModel
   sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
@@ -14,28 +14,32 @@ environment:
   name: 'Pendulum-v1'
   rendering_interval: 1
   observation_space:
-    max_speed: 8
-  action_space:
+    cos_theta: 1.0
+    sin_angle: 1.0
+    angular_velocity: 8.0
+  input_space:
+    dimension: 1
     max_torque: 2.0
 hparam:
-  experimental-hparam:
+  experimental_hparam:
     experimental_window: 15
     seed: 0
     show_plot: true
-  sampler-hparam:
+  sampler_hparam:
     number_samples: 15
     horizon: 50
     steps_per_prediction: 10.0
-  model-hparam:
+    std_dev: [1.5]
+  model_hparam:
     <placeholder>: 0
 constraints:
-  input-constraint:
+  input_constraint:
     <input-space-1-placeholder>:
-      uper-bound: 1.0
-      lowwer-bound: -1.0
+      uper_bound: 1.0
+      lowwer_bound: -1.0
   state-constraint:
     <state-space-1-placeholder>:
-      uperbound: 1.0
-      lowwer-bound: -1.0
-experimental-notes: |
+      uper_bound: 1.0
+      lowwer_bound: -1.0
+experimental_notes: |
   Nothing for now

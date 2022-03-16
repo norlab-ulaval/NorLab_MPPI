@@ -68,13 +68,13 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
     @abstractmethod
     def _init_action_space(self) -> Type[gym.spaces.Space]:
         """
-        Implement the environnement action space.
+        Implement the environnement input space.
         Must comply with `gym.spaces.Space`
 
-        Exemple inspired from gym Pendulum-v0 action space definition
+        Exemple inspired from gym Pendulum-v0 input space definition
             >>> def _init_action_space(self):
             >>>     from gym import spaces
-            >>>     max_torque = self._config_dict['action_space']['max_torque']
+            >>>     max_torque = self._config_dict['input_space']['max_torque']
             >>>     observation_space = spaces.Box( low=-max_torque,
             >>>                                     high=max_torque,
             >>>                                     shape=(1,),
@@ -85,7 +85,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def step(self, action) -> Tuple[Union[np.ndarray, Any], Union[int, float], bool, Dict]:
+    def step(self, input) -> Tuple[Union[np.ndarray, Any], Union[int, float], bool, Dict]:
         """
         Execute an action in the environment and observe the next state and the resulting reward.
 
@@ -108,7 +108,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
 
         ================================================================================================================
 
-        :param action: the action to perform in that state at the curent time step
+        :param input: the input to perform in that state at the curent time step
         :return: the resulting observation and reward consisting of a tupple (observation, reward, done, info)
         """
         pass
@@ -153,18 +153,60 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
     def __init__(self, config_dict):
         """
         Adapter for gym environment. Specification are fetch from the configuration file
-        Ex:
+
+        ----
+
+        # Ex. ref CartPole-v1 gym environment
+            >>> environment:
+            >>>   type: 'gym'
+            >>>   name: 'CartPole-v1'
+            >>>   rendering_interval: 1
+            >>>   observation_space:
+            >>>     max_speed: 8
+            >>>   input_space:
+            >>>     max_torque: 2.0
+
+        Space definition from gym CartPole-v1
+        at https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
+
+        ### Action Space
+
+        The action is a `ndarray` with shape `(1,)` which can take values `{0, 1}` indicating the direction of the fixed force the cart is pushed with.
+
+        | Num | Action                 |
+        |-----|------------------------|
+        | 0   | Push cart to the left  |
+        | 1   | Push cart to the right |
+
+        **Note**: The velocity that is reduced or increased by the applied force is not fixed and it depends on the angle the pole is pointing. The center of gravity of the pole varies the amount of energy needed to move the cart underneath it
+
+        ### Observation Space
+
+        The observation is a `ndarray` with shape `(4,)` with the values corresponding to the following positions and velocities:
+
+        | Num | Observation           | Min                  | Max                |
+        |-----|-----------------------|----------------------|--------------------|
+        | 0   | Cart Position         | -4.8                 | 4.8                |
+        | 1   | Cart Velocity         | -Inf                 | Inf                |
+        | 2   | Pole Angle            | ~ -0.418 rad (-24°)  | ~ 0.418 rad (24°)  |
+        | 3   | Pole Angular Velocity | -Inf                 | Inf                |
+
+        **Note:** While the ranges above denote the possible values for observation space of each element, it is not reflective of the allowed values of the state space in an unterminated episode. Particularly:
+        -  The cart x-position (index 0) can be take values between `(-4.8, 4.8)`, but the episode terminates if the cart leaves the `(-2.4, 2.4)` range.
+        -  The pole angle can be observed between  `(-.418, .418)` radians (or **±24°**), but the episode terminates if the pole angle is not in the range `(-.2095, .2095)` (or **±12°**)
+
+        ----
+
+        # Ex. ref Pendulum-v1 gym environment
             >>> environment:
             >>>   type: 'gym'
             >>>   name: 'Pendulum-v1'
             >>>   rendering_interval: 1
             >>>   observation_space:
             >>>     max_speed: 8
-            >>>   action_space:
+            >>>   input_space:
             >>>     max_torque: 2.0
 
-        ---
-        # Ref Pendulum-v1 gym environment
         Space definition from gym Pendulum-v1
         at https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py
 
@@ -184,14 +226,14 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         | 1   | y = sin(angle)   | -1.0 | 1.0 |
         | 2   | Angular Velocity | -8.0 | 8.0 |
 
-        ---
+        ----
 
         :param config_dict:
         """
         super().__init__(config_dict=config_dict)
 
     def _make(self) -> Type[gym.wrappers.time_limit.TimeLimit]:
-        config_name = self._config_dict['config-name'].replace(" ", "_")
+        config_name = self._config_dict['config_name'].replace(" ", "_")
         env = gym.make(self._config_dict['environment']['name'])
         if self._record:
             print('os.getcwd() >>>', os.getcwd())
@@ -213,8 +255,8 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
     def _init_action_space(self) -> Type[gym.spaces.Space]:
         return self._env.action_space
 
-    def step(self, action) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
-        return self._env.step(action)
+    def step(self, input) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
+        return self._env.step(input)
 
     def reset(self) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
         self._rollout_idx += 1

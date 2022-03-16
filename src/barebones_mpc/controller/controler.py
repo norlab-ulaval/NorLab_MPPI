@@ -61,6 +61,7 @@ class ModelPredictiveControler(object):
         rewards = []
 
         if state_t0 is not None:
+            # (CRITICAL) todo:implement
             raise NotImplementedError("(CRITICAL) todo ← Feeback loop initial state is given by the environment")
         else:
             observation = self.environment.reset()
@@ -68,7 +69,7 @@ class ModelPredictiveControler(object):
         observations.append(observation)
 
         nominal_input = self._init_nominal_input()
-        experimental_window = self.config['hparam']['experimental-hparam']['experimental_window']
+        experimental_window = self.config['hparam']['experimental_hparam']['experimental_window']
         for global_step in range(experimental_window):
 
             if self.config['force_headless_mode']:
@@ -76,12 +77,10 @@ class ModelPredictiveControler(object):
 
             sample_input = self.sampler.sample_inputs(nominal_input=nominal_input)
             sample_states = self.sampler.sample_states(sample_input=sample_input, init_state=observation)
-            sample_cost = self.evaluator.sample_costs(sample_input=sample_input, sample_states=sample_states)
-            nominal_input, nominal_states = self.selector.select_next_input(sample_input=sample_input,
-                                                                            sample_state=sample_states,
-                                                                            sample_cost=sample_cost)
+            sample_cost = self.evaluator.compute_sample_costs(sample_input=sample_input, sample_states=sample_states)
+            nominal_input, nominal_states = self.selector.select_next_input(sample_cost=sample_cost)
 
-            next_observation, reward, done, info = self.environment.step(action=nominal_input)
+            next_observation, reward, done, info = self.environment.step(input=nominal_input)
 
             actions.append(nominal_input)
             rewards.append(reward)
@@ -105,12 +104,12 @@ class ModelPredictiveControler(object):
 
     def _import_controler_component_class(self, component_key: str) -> Union[
         Type[AbstractModel], Type[AbstractSampler], Type[AbstractEvaluator], Type[AbstractSelector]]:
-        """ Dynamicaly import a controler-component class from config key-value
+        """ Dynamicaly import a controler_component class from config key-value
 
-        :param component_key: the controler-component class corresponding key in self.config
-        :return: the controler-component class
+        :param component_key: the controler_component class corresponding key in self.config
+        :return: the controler_component class
         """
-        model_cls_k: str = self.config['controler-component'][component_key]
+        model_cls_k: str = self.config['controler_component'][component_key]
         model_module_k, model_cls_k = model_cls_k.rsplit('.', maxsplit=1)
         model_module = __import__(model_module_k, fromlist=[model_cls_k])
         model_cls = getattr(model_module, model_cls_k)

@@ -1,0 +1,47 @@
+# Norlab-MPPI barebones_mpc config
+---
+config_name: 'default CartPole-v1'
+config_short_description: "gym CartPole-v1 test configuragtion. Discrete"
+controler_component:
+  model: src.barebones_mpc.model.abstract_model.MockModel
+  sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
+  evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
+  selector: src.barebones_mpc.selector.abstract_selector.MockSelector
+force_headless_mode: true
+record: false
+environment:
+  type: 'gym'
+  name: 'CartPole-v1'
+  rendering_interval: 1
+  observation_space:
+    cart_position: 4.8
+    cart_velocity: Inf
+    pole_angle: 0.418
+    pole_angular_velocity: Inf
+  input_space:
+    dimension: 1
+    legal_actions: {0, 1}
+hparam:
+  nominal_path_bootstrap: None
+  experimental_hparam:
+    experimental_window: 15
+    seed: 0
+    show_plot: true
+  sampler_hparam:
+    number_samples: 15
+    horizon: 50
+    steps_per_prediction: 10.0
+    std_dev: [1.5]
+  model_hparam:
+    <placeholder>: 0
+constraints:
+  input_constraint:
+    input_space_dim:
+      uper_bound: 1
+      lowwer_bound: 0
+  state-constraint:
+    <state-space-1-placeholder>:
+      uper_bound: 1.0
+      lowwer_bound: -1.0
+experimental_notes: |
+  Nothing for now

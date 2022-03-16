@@ -28,7 +28,7 @@ parser.add_argument('--testSpec', action='store_true', help='Flag for automated 
 # parser.add_argument('--intDefaultExample', type=int, default=20, help='')
 # parser.add_argument('--emptyBoolExample', default=None, type=bool, help='')
 # parser.add_argument('--floatExample', type=float, default=1.6, help='')
-# parser.add_argument('-b', '--BoolExample', action='store_true', help='')
+# parser.add_argument('-b', '--BoolExample', input='store_true', help='')
 # # ...........................................................................................‹‹‹ Parser references ‹‹‹
 
 
