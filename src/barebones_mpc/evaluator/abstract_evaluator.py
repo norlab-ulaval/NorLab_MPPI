@@ -8,7 +8,7 @@ class AbstractEvaluator(metaclass=ABCMeta):
         self.input_weight = None
 
     @abstractmethod
-    def sample_costs(self, sample_input, sample_states):
+    def compute_sample_costs(self, sample_input, sample_states):
         """ computes the cost related to every sample
 
         :param sample_input: sample input array
@@ -18,7 +18,7 @@ class AbstractEvaluator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def input_cost(self, input):
+    def compute_input_cost(self, input):
         """ computes a single input cost
 
         :param input: single input array
@@ -27,7 +27,7 @@ class AbstractEvaluator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def state_cost(self, state):
+    def compute_state_cost(self, state):
         """ compute a single state cost
 
         :param state: single state array
@@ -36,7 +36,7 @@ class AbstractEvaluator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def final_state_cost(self, final_state):
+    def compute_final_state_cost(self, final_state):
         """ compute a final state cost
 
         :param final_state: final state array
