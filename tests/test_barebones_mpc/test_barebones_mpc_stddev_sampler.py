@@ -19,7 +19,7 @@ def sampler_init_params():
     input_dimension = 2 # input array dimension
     state_dimension = 2
     init_state = np.zeros(state_dimension) # initial state vector
-    std_dev = 1.5  # rad/s
+    std_dev = np.array([1.5])  # rad/s
 
     return time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, state_dimension, init_state, std_dev
 
@@ -36,7 +36,7 @@ def std_dev_inv_pendulum_model_init_params():
     cart_mass = 1 # kg
     pendulum_mass = 1 # kg
     nominal_input = np.zeros((sample_length, input_dimension))
-    std_dev = 0.1
+    std_dev = np.array([0.1])
 
     return time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, state_dimension, init_state, cart_mass, pendulum_mass, nominal_input, std_dev
 
@@ -54,7 +54,7 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
     standard_dev_sampler = StandardDevSampler(inv_pendulum_model, number_samples, input_dimension, sample_length, init_state, std_dev)
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
-    assert sample_input.shape == (sample_length, number_samples+1, input_dimension)
+    assert sample_input.shape == (sample_length+1, number_samples, input_dimension)
     return None
 
 def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_params):
@@ -65,7 +65,7 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
     sample_state = standard_dev_sampler.sample_states(sample_input, init_state)
-    assert sample_state.shape == (sample_length, number_samples+1, state_dimension)
+    assert sample_state.shape == (sample_length+1, number_samples, state_dimension)
     return None
 
 @pytest.fixture
@@ -81,7 +81,7 @@ def std_dev_sample_straight_line_params():
     cart_mass = 1 # kg
     pendulum_mass = 1 # kg
     nominal_input = np.arange(0, sample_length).reshape((sample_length, input_dimension))
-    std_dev = 0.0
+    std_dev = np.array([0.0])
 
     return time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, state_dimension, init_state, cart_mass, pendulum_mass, nominal_input, std_dev
 
