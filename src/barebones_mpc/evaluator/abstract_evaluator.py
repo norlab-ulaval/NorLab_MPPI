@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -48,14 +50,14 @@ class AbstractEvaluator(metaclass=ABCMeta):
 class MockEvaluator(AbstractEvaluator):
     """ For testing purpose only"""
 
-    def sample_costs(self, sample_input, sample_states):
+    def compute_sample_costs(self, sample_input, sample_states):
         pass
 
-    def input_cost(self, input):
+    def compute_input_cost(self, input):
         pass
 
-    def state_cost(self, state):
+    def compute_state_cost(self, state):
         pass
 
-    def final_state_cost(self, final_state):
+    def compute_final_state_cost(self, final_state):
         pass
