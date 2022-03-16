@@ -12,4 +12,4 @@ class GreedySelector(AbstractSelector):
         :param sample_cost: sample cost array
         :return new nominal input and nominal state arrays
         """
-        return np.argmax(sample_cost)
+        return np.argmin(sample_cost)
