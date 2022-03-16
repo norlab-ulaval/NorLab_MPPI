@@ -31,10 +31,11 @@ def test_ModelPredictiveControler_init_arg_component_is_subclass_FAIL(setup_mock
         ModelPredictiveControler(config_path=config_path)
 
 
-@pytest.mark.skip(reason="Todo: implement arbitrary state_t0")
+# @pytest.mark.skip(reason="Todo: implement arbitrary state_t0")
 def test_state_t0_is_None_PASS(setup_mock_barebones_mpc):
     config_path = setup_mock_barebones_mpc
-    ModelPredictiveControler(config_path=config_path)
+    mpc = ModelPredictiveControler(config_path=config_path)
+    mpc.execute(state_t0=1)
 
 
 def test_execute_headless_PASS(setup_mock_barebones_mpc):
@@ -43,10 +44,10 @@ def test_execute_headless_PASS(setup_mock_barebones_mpc):
     mpc.execute()
 
 
-@pytest.mark.skip(reason="mute")
 def test_execute_record_PASS(setup_mock_barebones_mpc):
     # config_path = setup_mock_barebones_mpc
     # mpc = ModelPredictiveControler(config_path=config_path)
     # mpc.execute()
-    assert False
+
+    raise NotImplementedError   # todo: implement
 

@@ -67,14 +67,6 @@ class TestAbstractEnvironmentAdapter:
 
 
 # ::: Gym rendering virtual display ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-@pytest.fixture(scope='module')
-def setup_virtual_display():
-    from pyvirtualdisplay import Display
-    virtual_display = Display(visible=False, size=(1400, 900))
-    virtual_display.start()
-    yield
-    virtual_display.stop()
-
 
 def test_gym_headless_rendering_classic_control(setup_virtual_display):
     # from pyvirtualdisplay import Display
@@ -164,7 +156,7 @@ class TestGymEnvironmentAdapter:
         assert os.path.isfile(video_recording_path)
         print(os.listdir(video_dir))
         print(os.path.abspath(video_recording_path))
-        raise FileNotFoundError   # todo: can't find the recorded video <--
+        raise FileNotFoundError   # todo: the assert passed but can't locate the recorded video <--
 
 
 def test_make_environment_adapter_gym(setup_mock_config_dict):

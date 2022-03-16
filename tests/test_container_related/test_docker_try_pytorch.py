@@ -12,8 +12,3 @@ def test_verify_pytorch_install_PASS():
 def test_verify_pytorch_cuda_install():
     verify_pytorch_cuda_install()
     return None
-
-
-def test_pytest_expect_failure():
-    with pytest.raises(AssertionError):
-        raise AssertionError
