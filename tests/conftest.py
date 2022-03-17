@@ -1,6 +1,8 @@
 # coding=utf-8
 
 import pytest
+import yaml
+
 
 @pytest.fixture(scope='session')
 def setup_virtual_display():
@@ -9,3 +11,21 @@ def setup_virtual_display():
     virtual_display.start()
     yield
     virtual_display.stop()
+
+
+@pytest.fixture(scope="module")
+def setup_mock_config_dict_CartPole():
+    """ Test config file specify environment as gym CartPole-v1 """
+    config_path = "tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
+    with open(config_path, 'r') as f:
+        config_dict = dict(yaml.safe_load(f))
+    return config_dict
+
+
+@pytest.fixture(scope="module")
+def setup_mock_config_dict_Pendulum():
+    """ Test config file specify environment as gym Pendulum-v1 """
+    config_path = "tests/test_barebones_mpc/config_files/default_test_config_Pendulum-v1.yaml"
+    with open(config_path, 'r') as f:
+        config_dict = dict(yaml.safe_load(f))
+    return config_dict

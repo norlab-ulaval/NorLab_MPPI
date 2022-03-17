@@ -4,29 +4,11 @@ from typing import Any, Dict, List, Tuple, Type, Union, TypeVar
 import os
 import pytest
 import gym
-import yaml
 import numpy as np
 
 from src.environment_adapter.adapters import AbstractEnvironmentAdapter, GymEnvironmentAdapter, make_environment_adapter
 
 EA = TypeVar('EA', AbstractEnvironmentAdapter, GymEnvironmentAdapter)
-
-
-@pytest.fixture(scope="module")
-def setup_mock_config_dict_CartPole():
-    """ Test config file specify environment as gym CartPole-v1 """
-    config_path = "tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
-    with open(config_path, 'r') as f:
-        config_dict = dict(yaml.safe_load(f))
-    return config_dict
-
-@pytest.fixture(scope="module")
-def setup_mock_config_dict_Pendulum():
-    """ Test config file specify environment as gym Pendulum-v1 """
-    config_path = "tests/test_barebones_mpc/config_files/default_test_config_Pendulum-v1.yaml"
-    with open(config_path, 'r') as f:
-        config_dict = dict(yaml.safe_load(f))
-    return config_dict
 
 
 # ::: AbstractEnvironmentAdapter :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -125,19 +107,19 @@ class TestGymEnvironmentAdapter:
         assert isinstance(gym_env_adapter_fixture.observation_space, gym.spaces.Box)
 
     def test__init_action_space(self, gym_env_adapter_fixture):
-        assert isinstance(gym_env_adapter_fixture.action_space, gym.spaces.Box)
+        assert isinstance(gym_env_adapter_fixture.action_space, gym.spaces.Discrete)
 
     def test_reset(self, gym_env_adapter_fixture):
         obs = gym_env_adapter_fixture.reset()
         assert isinstance(obs, np.ndarray)
-        assert obs.shape == (3,)
+        assert obs.shape == gym.make('CartPole-v1').observation_space.shape
 
     def test_step(self, gym_env_adapter_fixture):
         _ = gym_env_adapter_fixture.reset()
         action = gym_env_adapter_fixture.action_space.sample()
         next_obs = gym_env_adapter_fixture.step(action)
         assert isinstance(next_obs[0], np.ndarray)
-        assert next_obs[0].shape == (3,)
+        assert next_obs[0].shape == gym.make('CartPole-v1').observation_space.shape
         assert isinstance(next_obs[1], float)
         assert isinstance(next_obs[2], bool)
         assert isinstance(next_obs[3], dict)

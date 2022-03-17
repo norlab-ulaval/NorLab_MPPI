@@ -162,9 +162,13 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
             >>>   name: 'CartPole-v1'
             >>>   rendering_interval: 1
             >>>   observation_space:
-            >>>     max_speed: 8
+            >>>     cart_position: 4.8
+            >>>     cart_velocity: Inf
+            >>>     pole_angle: 0.418
+            >>>     pole_angular_velocity: Inf
             >>>   input_space:
-            >>>     max_torque: 2.0
+            >>>     dimension: 1
+            >>>     legal_actions: {0, 1}
 
         Space definition from gym CartPole-v1
         at https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
@@ -203,8 +207,11 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
             >>>   name: 'Pendulum-v1'
             >>>   rendering_interval: 1
             >>>   observation_space:
-            >>>     max_speed: 8
+            >>>     cos_theta: 1.0
+            >>>     sin_angle: 1.0
+            >>>     angular_velocity: 8.0
             >>>   input_space:
+            >>>     dimension: 1
             >>>     max_torque: 2.0
 
         Space definition from gym Pendulum-v1
