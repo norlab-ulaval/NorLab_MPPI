@@ -15,7 +15,7 @@ class StandardDevSampler(AbstractSampler):
         self.sample_input = np.empty((self.sample_length, self.number_samples + 1, self.input_dimension))
 
     @classmethod
-    def config_init(cls, config: dict):
+    def config_init(cls, model, config: dict):
         from src.barebones_mpc.config_files.config_utils import import_controler_component_class
 
         horizon = config['hparam']['sampler_hparam']['horizon']

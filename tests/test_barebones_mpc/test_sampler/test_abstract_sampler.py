@@ -37,14 +37,14 @@ class TestMockSampler:
             init_state=config_sampler.init_state,
             )
 
-    def test_config_init(self, setup_mock_config_dict_CartPole):
-        instance = MockSampler.config_init(setup_mock_config_dict_CartPole)
+    def test_config_init(self, setup_mock_config_dict_CartPole, config_sampler):
+        instance = MockSampler.config_init(config_sampler.model, setup_mock_config_dict_CartPole)
         assert isinstance(instance, AbstractSampler)
 
     def test_sample_inputs(self, setup_mock_config_dict_CartPole, config_sampler):
-        instance = MockSampler.config_init(setup_mock_config_dict_CartPole)
+        instance = MockSampler.config_init(config_sampler.model, setup_mock_config_dict_CartPole)
         instance.sample_inputs(None)
 
     def test_sample_sample_states(self, setup_mock_config_dict_CartPole, config_sampler):
-        instance = MockSampler.config_init(setup_mock_config_dict_CartPole)
+        instance = MockSampler.config_init(config_sampler.model, setup_mock_config_dict_CartPole)
         instance.sample_states(None, None)

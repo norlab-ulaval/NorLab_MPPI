@@ -20,7 +20,7 @@ class AbstractSampler(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def config_init(cls, config: dict):
+    def config_init(cls, model, config: dict):
         """
         Alternative initialization method via configuration dictionary
         Return an instance of AbstractNominalPathBootstrap
@@ -41,6 +41,7 @@ class AbstractSampler(metaclass=ABCMeta):
         >>>                        )
         >>>         return instance
 
+        :param model:
         :param config: a dictionary of configuration
         """
         pass
@@ -85,7 +86,7 @@ class MockSampler(AbstractSampler):
             pass
 
     @classmethod
-    def config_init(cls, config: dict):
+    def config_init(cls, model, config: dict):
         from src.barebones_mpc.config_files.config_utils import import_controler_component_class
 
         horizon = config['hparam']['sampler_hparam']['horizon']
@@ -93,7 +94,7 @@ class MockSampler(AbstractSampler):
         input_shape: tuple = config['environment']['input_space']['shape']
         cls.config = config
 
-        instance = cls(model=import_controler_component_class(config, 'model')(),
+        instance = cls(model=model,
                        number_samples=config['hparam']['sampler_hparam']['number_samples'],
                        input_dimension=len(input_shape),
                        sample_length=(int(horizon/time_step)),

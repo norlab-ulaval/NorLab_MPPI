@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 
 # ... refactoring ......................................................................................................
 def test_config_init(setup_mock_config_dict_CartPole):
-    instance = StandardDevSampler.config_init(setup_mock_config_dict_CartPole)
+    instance = StandardDevSampler.config_init(None, setup_mock_config_dict_CartPole)
     assert isinstance(instance, AbstractSampler)
 
 

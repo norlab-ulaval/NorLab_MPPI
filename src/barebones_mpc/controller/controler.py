@@ -44,10 +44,10 @@ class ModelPredictiveControler(object):
         assert issubclass(selector_cls, AbstractSelector), (
             f'{ERR_S} argument passed to param \'selector_cls\' must be a subclass of \'AbstractSelector\'')
 
-        self.model = model_cls()
-        self.sampler = sampler_cls(self.model)
-        self.evaluator = evaluator_cls()
-        self.selector = selector_cls()
+        self.model = model_cls.config_init(self.config)
+        self.sampler = sampler_cls.config_init(self.model, self.config)
+        self.evaluator = evaluator_cls.config_init(self.config)
+        self.selector = selector_cls.config_init(self.config)
         self.environment = self._setup_environment()
 
     def execute(self, state_t0: Any = None) -> None:
