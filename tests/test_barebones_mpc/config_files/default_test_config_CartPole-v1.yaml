@@ -20,7 +20,7 @@ environment:
     pole_angular_velocity: Inf
   input_space:
     dimension: 1
-    legal_actions: {0, 1}
+    legal_actions: (0, 1)
 hparam:
   nominal_path_bootstrap: None
   experimental_hparam:

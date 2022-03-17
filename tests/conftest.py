@@ -13,7 +13,7 @@ def setup_virtual_display():
     virtual_display.stop()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def setup_mock_config_dict_CartPole():
     """ Test config file specify environment as gym CartPole-v1 """
     config_path = "tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
@@ -22,7 +22,7 @@ def setup_mock_config_dict_CartPole():
     return config_dict
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def setup_mock_config_dict_Pendulum():
     """ Test config file specify environment as gym Pendulum-v1 """
     config_path = "tests/test_barebones_mpc/config_files/default_test_config_Pendulum-v1.yaml"
