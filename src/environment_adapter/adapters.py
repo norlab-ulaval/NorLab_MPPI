@@ -167,7 +167,7 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
             >>>     pole_angle: 0.418
             >>>     pole_angular_velocity: Inf
             >>>   input_space:
-            >>>     dimension: 1
+            >>>     shape: 1
             >>>     legal_actions: {0, 1}
 
         Space definition from gym CartPole-v1
@@ -211,7 +211,7 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
             >>>     sin_angle: 1.0
             >>>     angular_velocity: 8.0
             >>>   input_space:
-            >>>     dimension: 1
+            >>>     shape: 1
             >>>     max_torque: 2.0
 
         Space definition from gym Pendulum-v1

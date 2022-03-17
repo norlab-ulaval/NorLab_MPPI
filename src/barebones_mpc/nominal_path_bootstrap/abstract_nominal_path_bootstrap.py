@@ -6,11 +6,11 @@ import numpy as np
 
 
 class AbstractNominalPathBootstrap(metaclass=ABCMeta):
+    config: dict
 
-    def __init__(self, sample_length, input_space, config: dict = None):
-        self._sample_length = sample_length
-        self._input_space = input_space
-        self._config = config
+    def __init__(self, sample_length, input_shape):
+        self.sample_length = sample_length
+        self.input_shape = input_shape
 
     @classmethod
     @abstractmethod
@@ -20,15 +20,16 @@ class AbstractNominalPathBootstrap(metaclass=ABCMeta):
         Return an instance of AbstractNominalPathBootstrap
 
         Exemple
-            >>> def config_init(cls, config: dict):
-            >>>     horizon = config['hparam']['sampler_hparam']['horizon']
-            >>>     time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
-            >>>     instance =  cls(sample_length=int(horizon/time_step),
-            >>>                     input_space=config['input_space']['legal_actions'],
-            >>>                     config=config,
-            >>>                     arbitrary_path=config['nominal_path_bootstrap'],
-            >>>                     )
-            >>>     return instance
+        >>>     @classmethod
+        >>> def config_init(cls, config: dict):
+        >>>     horizon = config['hparam']['sampler_hparam']['horizon']
+        >>>     time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
+        >>>     cls.config = config
+        >>>     instance =  cls(sample_length=int(horizon/time_step),
+        >>>                     input_shape=config['environment']['input_space']['shape'],
+        >>>                     arbitrary_path=config['nominal_path_bootstrap'],
+        >>>                     )
+        >>>     return instance
 
         :param config: a dictionary of configuration
         """
@@ -46,14 +47,17 @@ class AbstractNominalPathBootstrap(metaclass=ABCMeta):
 
 class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
     """ For testing purpose only"""
+    env: None
 
-    def __init__(self, sample_length, input_space, config: dict = None, arbitrary_path=None):
-        super().__init__(sample_length, input_space,  config)
+    def __init__(self, sample_length, input_shape, arbitrary_path=None, config: dict = None):
+        super().__init__(sample_length, input_shape)
         self._arbitrary_path = arbitrary_path
 
-        if config['environment']['type'] == 'gym':
+        self.config = config
+
+        if self.config['environment']['type'] == 'gym':
             import gym
-            self.env: gym.wrappers.time_limit.TimeLimit = gym.make(config['environment']['name'])
+            self.env: gym.wrappers.time_limit.TimeLimit = gym.make(self.config['environment']['name'])
         else:
             raise NotImplementedError
 
@@ -62,7 +66,7 @@ class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
         horizon = config['hparam']['sampler_hparam']['horizon']
         time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
         instance = cls(sample_length=int(horizon/time_step),
-                       input_space=config['environment']['input_space']['legal_actions'],
+                       input_shape=config['environment']['input_space']['shape'],
                        arbitrary_path=config['hparam']['nominal_path_bootstrap'],
                        config=config
                        )
@@ -70,5 +74,5 @@ class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
 
     def execute(self) -> Tuple[int, np.ndarray]:
         initial_nominal_input = self.env.action_space.sample()
-        initial_nominal_path = np.full(shape=(self._sample_length,), fill_value=initial_nominal_input)
+        initial_nominal_path = np.full(shape=(self.sample_length,), fill_value=initial_nominal_input)
         return initial_nominal_input, initial_nominal_path

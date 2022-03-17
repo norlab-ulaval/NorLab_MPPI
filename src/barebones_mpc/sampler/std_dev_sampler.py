@@ -11,7 +11,26 @@ class StandardDevSampler(AbstractSampler):
         self.sample_length = sample_length
         self.init_state = init_state
         self.std_dev = std_dev  #TODO : Define std_Dev for multiple dimensions of input
+
         self.sample_input = np.empty((self.sample_length, self.number_samples + 1, self.input_dimension))
+
+    @classmethod
+    def config_init(cls, config: dict):
+        from src.barebones_mpc.config_files.config_utils import import_controler_component_class
+
+        horizon = config['hparam']['sampler_hparam']['horizon']
+        time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
+        input_shape: tuple = config['environment']['input_space']['shape']
+        cls.config = config
+
+        instance = cls(model=import_controler_component_class(config, 'model')(),
+                       number_samples=config['hparam']['sampler_hparam']['number_samples'],
+                       input_dimension=len(input_shape),
+                       sample_length=(int(horizon/time_step)),
+                       init_state=np.zeros(config['environment']['observation_space']['shape'][0]),
+                       std_dev=config['hparam']['sampler_hparam']['std_dev']
+                       )
+        return instance
 
     def sample_inputs(self, nominal_input):
         """ Sample inputs based on the nominal input array

@@ -1,9 +1,9 @@
 # coding=utf-8
 import os
-from typing import Union, Any, Type
+from typing import Any, Type
 import yaml
-import gym
 
+from src.barebones_mpc.config_files.config_utils import import_controler_component_class
 from src.barebones_mpc.model.abstract_model import AbstractModel
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 from src.barebones_mpc.evaluator.abstract_evaluator import AbstractEvaluator
@@ -28,10 +28,10 @@ class ModelPredictiveControler(object):
         with open(config_path, 'r') as f:
             self.config = dict(yaml.safe_load(f))
 
-        model_cls: Type[AbstractModel] = self._import_controler_component_class('model')
-        sampler_cls: Type[AbstractSampler] = self._import_controler_component_class('sampler')
-        evaluator_cls: Type[AbstractEvaluator] = self._import_controler_component_class('evaluator')
-        selector_cls: Type[AbstractSelector] = self._import_controler_component_class('selector')
+        model_cls: Type[AbstractModel] = import_controler_component_class(self.config, 'model')
+        sampler_cls: Type[AbstractSampler] = import_controler_component_class(self.config, 'sampler')
+        evaluator_cls: Type[AbstractEvaluator] = import_controler_component_class(self.config, 'evaluator')
+        selector_cls: Type[AbstractSelector] = import_controler_component_class(self.config, 'selector')
 
         # ... Config validation ........................................................................................
         ERR_S = "(barebones_mpc ERROR): "
@@ -102,15 +102,3 @@ class ModelPredictiveControler(object):
         pass
         # raise NotImplementedError  # (CRITICAL) todo:implement <-- we are here
 
-    def _import_controler_component_class(self, component_key: str) -> Union[
-        Type[AbstractModel], Type[AbstractSampler], Type[AbstractEvaluator], Type[AbstractSelector]]:
-        """ Dynamicaly import a controler_component class from config key-value
-
-        :param component_key: the controler_component class corresponding key in self.config
-        :return: the controler_component class
-        """
-        model_cls_k: str = self.config['controler_component'][component_key]
-        model_module_k, model_cls_k = model_cls_k.rsplit('.', maxsplit=1)
-        model_module = __import__(model_module_k, fromlist=[model_cls_k])
-        model_cls = getattr(model_module, model_cls_k)
-        return model_cls
