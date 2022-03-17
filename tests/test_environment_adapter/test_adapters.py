@@ -15,7 +15,7 @@ EA = TypeVar('EA', AbstractEnvironmentAdapter, GymEnvironmentAdapter)
 # @pytest.mark.skip(reason="tmp mute")
 class TestAbstractEnvironmentAdapter:
 
-    @pytest.fixture(scope="module")
+    @pytest.fixture(scope="function")
     def setup_MockEnvironmentAdapter(self, setup_mock_config_dict_CartPole) -> EA:
         test_config_dict = setup_mock_config_dict_CartPole
 

@@ -9,13 +9,15 @@ from src.barebones_mpc.model.abstract_model import AbstractModel
 class AbstractSampler(metaclass=ABCMeta):
     config: dict
 
-    def __init__(self, model, number_samples, input_dimension, sample_length, init_state):
+    def __init__(self, model: AbstractModel, number_samples: int, input_dimension: int, sample_length: int,
+                 init_state: np.ndarray):
         self.number_samples = number_samples
         self.input_dimension = input_dimension
         self.sample_length = sample_length
         self.init_state = init_state
 
-        assert isinstance(model, AbstractModel)
+        ERR_S = f"({self.__class__.__name__} ERROR): "
+        assert isinstance(model, AbstractModel), f"{ERR_S} {model} is not and instance of AbstractModel"
         self.model = model
 
     @classmethod

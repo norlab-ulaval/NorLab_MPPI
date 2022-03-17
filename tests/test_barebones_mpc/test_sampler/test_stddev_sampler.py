@@ -1,11 +1,13 @@
 # coding=utf-8
+from dataclasses import dataclass
+from typing import Any, Union
 
 import pytest
 import numpy as np
 
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 from src.barebones_mpc.sampler.std_dev_sampler import StandardDevSampler
-from src.barebones_mpc.model.abstract_model import AbstractModel
+from src.barebones_mpc.model.abstract_model import AbstractModel, MockModel
 from src.barebones_mpc.model.inv_pendulum_model import InvPendulumModel
 
 import pandas as pd
@@ -13,8 +15,23 @@ from matplotlib import pyplot as plt
 
 
 # ... refactoring ......................................................................................................
-def test_config_init(setup_mock_config_dict_CartPole):
-    instance = StandardDevSampler.config_init(None, setup_mock_config_dict_CartPole)
+@dataclass
+class ConfigSampler:
+    config: Union[dict, None]
+    init_state: Any = np.zeros(4)
+    number_samples: int = 1000
+    input_dimension: int = 1
+    sample_length: int = int(0.75/(1/20))
+    model: MockModel = MockModel()
+
+
+@pytest.fixture(scope="function")
+def config_sampler(setup_mock_config_dict_CartPole):
+    return ConfigSampler(config=setup_mock_config_dict_CartPole)
+
+
+def test_config_init(setup_mock_config_dict_CartPole, config_sampler):
+    instance = StandardDevSampler.config_init(config_sampler.model, setup_mock_config_dict_CartPole)
     assert isinstance(instance, AbstractSampler)
 
 
@@ -55,12 +72,12 @@ def std_dev_inv_pendulum_model_init_params():
            init_state, cart_mass, pendulum_mass, nominal_input, std_dev
 
 
-def test_mpc_stddev_init(sampler_init_params):
-    time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, state_dimension, \
-    init_state, std_dev = sampler_init_params
+def test_mpc_stddev_init(sampler_init_params, config_sampler):
+    (time_step, commanded_lon_vel, horizon, sample_length, number_samples, input_dimension, state_dimension, init_state,
+     std_dev
+     ) = sampler_init_params
 
-    abstract_model = AbstractModel
-    standard_dev_sampler = StandardDevSampler(abstract_model, number_samples, input_dimension, sample_length,
+    standard_dev_sampler = StandardDevSampler(config_sampler.model, number_samples, input_dimension, sample_length,
                                               init_state, std_dev)
     return None
 

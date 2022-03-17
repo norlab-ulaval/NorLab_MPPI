@@ -1,17 +1,16 @@
+from src.barebones_mpc.model.abstract_model import AbstractModel
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 import numpy as np
 
 
 class StandardDevSampler(AbstractSampler):
 
-    def __init__(self, model, number_samples, input_dimension, sample_length, init_state, std_dev):
-        self.model = model
-        self.number_samples = number_samples
-        self.input_dimension = input_dimension
-        self.sample_length = sample_length
-        self.init_state = init_state
-        self.std_dev = std_dev  #TODO : Define std_Dev for multiple dimensions of input
+    def __init__(self, model: AbstractModel, number_samples: int, input_dimension: int, sample_length: int,
+                 init_state: np.ndarray, std_dev):
 
+        super().__init__(model, number_samples, input_dimension, sample_length, init_state)
+
+        self.std_dev = std_dev  #TODO : Define std_Dev for multiple dimensions of input
         self.sample_input = np.empty((self.sample_length, self.number_samples + 1, self.input_dimension))
 
     @classmethod

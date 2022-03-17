@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from collections import namedtuple
 from typing import Any, List, Type, Tuple, Dict, TypeVar, Union
 
 import numpy as np

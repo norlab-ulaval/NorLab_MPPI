@@ -3,7 +3,11 @@ import os
 from typing import Any, Type
 import yaml
 
-from src.barebones_mpc.config_files.config_utils import import_controler_component_class
+from src.barebones_mpc.config_files.config_utils import (
+    import_controler_component_class,
+    # AbstractEvaluator,
+    # AbstractModel, AbstractSampler, AbstractSelector,
+    )
 from src.barebones_mpc.model.abstract_model import AbstractModel
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 from src.barebones_mpc.evaluator.abstract_evaluator import AbstractEvaluator
@@ -34,7 +38,7 @@ class ModelPredictiveControler(object):
         selector_cls: Type[AbstractSelector] = import_controler_component_class(self.config, 'selector')
 
         # ... Config validation ........................................................................................
-        ERR_S = "(barebones_mpc ERROR): "
+        ERR_S = f"({self.__class__.__name__} ERROR): "
         assert issubclass(model_cls, AbstractModel), (
             f'{ERR_S} argument passed to param \'model_cls\' must be a subclass of \'AbstractModel\'')
         assert issubclass(sampler_cls, AbstractSampler), (
@@ -101,4 +105,3 @@ class ModelPredictiveControler(object):
     def _init_nominal_input(self):
         pass
         # raise NotImplementedError  # (CRITICAL) todo:implement <-- we are here
-
