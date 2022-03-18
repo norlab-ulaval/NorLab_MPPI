@@ -20,26 +20,6 @@ environment:
   input_space:
     shape: [1]
     max_torque: 2.0
-hparam:
-  experimental_hparam:
-    experimental_window: 15
-    seed: 0
-    show_plot: true
-  sampler_hparam:
-    number_samples: 15
-    horizon: 50
-    steps_per_prediction: 10.0
-    std_dev: [1.5]
-  model_hparam:
-    <placeholder>: 0
-constraints:
-  input_constraint:
-    <input-space-1-placeholder>:
-      uper_bound: 1.0
-      lowwer_bound: -1.0
-  state-constraint:
-    <state-space-1-placeholder>:
-      uper_bound: 1.0
-      lowwer_bound: -1.0
+hparam: None
 experimental_notes: |
   Nothing for now

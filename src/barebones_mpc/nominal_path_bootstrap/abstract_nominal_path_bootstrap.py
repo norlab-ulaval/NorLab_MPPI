@@ -24,7 +24,7 @@ class AbstractNominalPathBootstrap(metaclass=ABCMeta):
         >>>     def config_init(cls, config: dict):
         >>>         horizon = config['hparam']['sampler_hparam']['horizon']
         >>>         time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
-        >>>         cls.config = config
+        >>>         cls._config = config
         >>>         instance =  cls(sample_length=int(horizon/time_step),
         >>>                         input_shape=config['environment']['input_space']['shape'],
         >>>                         arbitrary_path=config['nominal_path_bootstrap'],

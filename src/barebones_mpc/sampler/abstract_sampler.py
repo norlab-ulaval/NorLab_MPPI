@@ -1,52 +1,52 @@
-from abc import ABCMeta, abstractmethod
-from typing import Type
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Tuple, Type
 
 import numpy as np
+from gym import wrappers as gym_wrappers
+from gym import make as gym_make
 
+from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 from src.barebones_mpc.model.abstract_model import AbstractModel
+from src.barebones_mpc.config_files.config_utils import import_controler_component_class
 
 
-class AbstractSampler(metaclass=ABCMeta):
-    config: dict
+class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
-    def __init__(self, model: AbstractModel, number_samples: int, input_dimension: int, sample_length: int,
-                 init_state: np.ndarray):
+    def __init__(self, model: Type[AbstractModel], number_samples: int, input_dimension: int, sample_length: int,
+                 init_state: np.ndarray, *args, **kwargs):
         self.number_samples = number_samples
         self.input_dimension = input_dimension
         self.sample_length = sample_length
         self.init_state = init_state
 
-        ERR_S = f"({self.__class__.__name__} ERROR): "
-        assert isinstance(model, AbstractModel), f"{ERR_S} {model} is not and instance of AbstractModel"
+        assert isinstance(model, AbstractModel), f"{self.ERR_S()} {model} is not and instance of AbstractModel"
         self.model = model
 
     @classmethod
-    @abstractmethod
-    def config_init(cls, model, config: dict):
-        """
-        Alternative initialization method via configuration dictionary
-        Return an instance of AbstractNominalPathBootstrap
+    def _subclass_config_key(cls) -> str:
+        return 'sampler_hparam'
 
-        Exemple
-        >>>     @classmethod
-        >>>     def config_init(cls, config: dict):
-        >>>         from src.barebones_mpc.config_files.config_utils import import_controler_component_class
-        >>>         horizon = config['hparam']['sampler_hparam']['horizon']
-        >>>         time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
-        >>>         input_shape: tuple = config['environment']['input_space']['shape']
-        >>>         cls.config = config
-        >>>         instance = cls(model=import_controler_component_class(config, 'model')(),
-        >>>                        number_samples=config['hparam']['sampler_hparam']['number_samples'],
-        >>>                        input_dimension=len(input_shape),
-        >>>                        sample_length=(int(horizon/time_step)),
-        >>>                        init_state=np.zeros(config['environment']['observation_space']['shape'][0])
-        >>>                        )
-        >>>         return instance
+    @classmethod
+    def _init_method_registred_param(cls) -> List[str]:
+        return ['self', 'model', 'number_samples', 'input_dimension', 'sample_length', 'init_state']
 
-        :param model:
-        :param config: a dictionary of configuration
-        """
-        pass
+    def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
+        horizon: int = subclass_config['horizon']
+        time_step: int = subclass_config['steps_per_prediction']
+        input_shape: tuple = config['environment']['input_space']['shape']
+
+        values_from_callback = {
+            'sample_length':   int(horizon/time_step),
+            'init_state':      np.zeros(config['environment']['observation_space']['shape'][0]),
+            'input_dimension': len(input_shape),
+            }
+
+        return values_from_callback
+
+    @classmethod
+    def config_init(cls, config: Dict, model: Type[AbstractModel], *args, **kwargs):
+        kwargs.update({'model': import_controler_component_class(config, 'model')()})
+        return super().config_init(config, *args, **kwargs)
 
     @abstractmethod
     def sample_inputs(self, nominal_input):
@@ -73,36 +73,21 @@ class AbstractSampler(metaclass=ABCMeta):
 class MockSampler(AbstractSampler):
     """ For testing purpose only"""
     env: None
-    config: dict
 
-    def __init__(self, model, number_samples, input_dimension, sample_length, init_state):
+    def __init__(self, model, number_samples, input_dimension, sample_length, init_state,
+                 test_arbitrary_param: Tuple[int] = (1, 2, 3,)):
+
         super().__init__(model, number_samples, input_dimension, sample_length, init_state)
 
+        self.computed_test_arbitrary_param = (np.array(list(test_arbitrary_param))).sum()
+
         try:
-            if self.config['environment']['type'] == 'gym':
-                import gym
-                self.env: gym.wrappers.time_limit.TimeLimit = gym.make(self.config['environment']['name'])
+            if self._config['environment']['type'] == 'gym':
+                self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config['environment']['name'])
             else:
                 raise NotImplementedError
         except AttributeError:
             pass
-
-    @classmethod
-    def config_init(cls, model, config: dict):
-        from src.barebones_mpc.config_files.config_utils import import_controler_component_class
-
-        horizon = config['hparam']['sampler_hparam']['horizon']
-        time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
-        input_shape: tuple = config['environment']['input_space']['shape']
-        cls.config = config
-
-        instance = cls(model=model,
-                       number_samples=config['hparam']['sampler_hparam']['number_samples'],
-                       input_dimension=len(input_shape),
-                       sample_length=(int(horizon/time_step)),
-                       init_state=np.zeros(config['environment']['observation_space']['shape'][0])
-                       )
-        return instance
 
     def sample_inputs(self, nominal_input):
         sample = np.full((self.sample_length, self.number_samples + 1, self.input_dimension),

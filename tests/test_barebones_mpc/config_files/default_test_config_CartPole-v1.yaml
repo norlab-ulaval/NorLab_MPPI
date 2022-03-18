@@ -1,4 +1,4 @@
-# Norlab-MPPI barebones_mpc config
+# Norlab-MPPI barebones_mpc test config CartPole-v1
 ---
 config_name: 'default CartPole-v1'
 config_short_description: "gym CartPole-v1 test configuragtion. Discrete"
@@ -29,10 +29,11 @@ hparam:
     seed: 0
     show_plot: true
   sampler_hparam:
-    number_samples: 15
-    horizon: 50
-    steps_per_prediction: 10.0
+    number_samples: 1000
+    horizon: 0.75
+    steps_per_prediction: 0.05
     std_dev: [1.5]
+    test_arbitrary_param: [3, 3, 3]
   model_hparam:
     <placeholder>: 0
 constraints:

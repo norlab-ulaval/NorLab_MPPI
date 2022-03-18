@@ -31,7 +31,8 @@ def config_sampler(setup_mock_config_dict_CartPole):
 
 
 def test_config_init(setup_mock_config_dict_CartPole, config_sampler):
-    instance = StandardDevSampler.config_init(config_sampler.model, setup_mock_config_dict_CartPole)
+    instance = StandardDevSampler.config_init(
+        config=setup_mock_config_dict_CartPole, model=config_sampler.model)
     assert isinstance(instance, AbstractSampler)
 
 
@@ -77,8 +78,9 @@ def test_mpc_stddev_init(sampler_init_params, config_sampler):
      std_dev
      ) = sampler_init_params
 
-    standard_dev_sampler = StandardDevSampler(config_sampler.model, number_samples, input_dimension, sample_length,
-                                              init_state, std_dev)
+    standard_dev_sampler = StandardDevSampler(model=config_sampler.model, number_samples=number_samples,
+                                              input_dimension=input_dimension, sample_length=sample_length,
+                                              init_state=init_state, std_dev=std_dev)
     return None
 
 
