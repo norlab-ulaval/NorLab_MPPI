@@ -1,39 +1,39 @@
 # coding=utf-8
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from typing import TypeVar, Union, Any, Type, Tuple, List, Dict
 import numpy as np
+from gym import wrappers as gym_wrappers
+from gym import make as gym_make
+
+from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 
 
-class AbstractNominalPathBootstrap(metaclass=ABCMeta):
+class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent):
     config: dict
 
-    def __init__(self, sample_length, input_shape):
+    def __init__(self, sample_length, input_shape, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.sample_length = sample_length
         self.input_shape = input_shape
 
     @classmethod
-    @abstractmethod
-    def config_init(cls, config: dict):
-        """
-        Alternative initialization method via configuration dictionary
-        Return an instance of AbstractNominalPathBootstrap
+    def _subclass_config_key(cls) -> str:
+        return "nominal_path_bootstrap"
 
-        Exemple
-        >>>     @classmethod
-        >>>     def config_init(cls, config: dict):
-        >>>         horizon = config['hparam']['sampler_hparam']['horizon']
-        >>>         time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
-        >>>         cls._config = config
-        >>>         instance =  cls(sample_length=int(horizon/time_step),
-        >>>                         input_shape=config['environment']['input_space']['shape'],
-        >>>                         arbitrary_path=config['nominal_path_bootstrap'],
-        >>>                         )
-        >>>         return instance
+    @classmethod
+    def _init_method_registred_param(cls) -> List[str]:
+        return ['self', 'sample_length', 'input_shape']
 
-        :param config: a dictionary of configuration
-        """
-        pass
+    def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
+        horizon = config['hparam']['sampler_hparam']['horizon']
+        time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
+        values_from_callback = {
+            'sample_length': int(horizon/time_step),
+            'input_shape':   config['environment']['input_space']['shape'],
+            }
+        return values_from_callback
 
     @abstractmethod
     def execute(self) -> Tuple[Any, Any]:
@@ -49,28 +49,16 @@ class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
     """ For testing purpose only"""
     env: None
 
-    def __init__(self, sample_length, input_shape, arbitrary_path=None, config: dict = None):
+    def __init__(self, sample_length, input_shape):
         super().__init__(sample_length, input_shape)
-        self._arbitrary_path = arbitrary_path
 
-        self.config = config
-
-        if self.config['environment']['type'] == 'gym':
-            import gym
-            self.env: gym.wrappers.time_limit.TimeLimit = gym.make(self.config['environment']['name'])
-        else:
-            raise NotImplementedError
-
-    @classmethod
-    def config_init(cls, config: dict):
-        horizon = config['hparam']['sampler_hparam']['horizon']
-        time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
-        instance = cls(sample_length=int(horizon/time_step),
-                       input_shape=config['environment']['input_space']['shape'],
-                       arbitrary_path=config['hparam']['nominal_path_bootstrap'],
-                       config=config
-                       )
-        return instance
+        try:
+            if self._config['environment']['type'] == 'gym':
+                self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config['environment']['name'])
+            else:
+                raise NotImplementedError
+        except AttributeError:
+            pass
 
     def execute(self) -> Tuple[int, np.ndarray]:
         initial_nominal_input = self.env.action_space.sample()

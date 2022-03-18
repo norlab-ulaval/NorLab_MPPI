@@ -7,7 +7,7 @@ from typing import Type
 class StandardDevSampler(AbstractSampler):
 
     def __init__(self, model: Type[AbstractModel], number_samples: int, input_dimension: int,
-                 sample_length: int, init_state: np.ndarray, std_dev):
+                 sample_length: int, init_state: np.ndarray, std_dev: float):
         super().__init__(model, number_samples, input_dimension, sample_length, init_state)
 
         self.std_dev = std_dev  #TODO : Define std_Dev for multiple dimensions of input

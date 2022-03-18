@@ -5,7 +5,7 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 
 
 def import_controler_component_class(config, component_key: str) -> Type[AbstractModelPredictiveControlComponent]:
-    """ Dynamicaly import a controler_component class from config key-value
+    """ Dynamicaly import a controler_component class from config dictionary key-value
 
     :param config: a configuration dictionary
     :param component_key: the controler_component class corresponding key in self._config

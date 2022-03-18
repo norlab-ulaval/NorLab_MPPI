@@ -51,7 +51,7 @@ class TestAbstractModelPredictiveControlComponent:
         instance = MockSampler.config_init(config=setup_mock_config_dict_CartPole,
                                            model=config_ampcc.model)
         assert isinstance(instance, AbstractSampler)
-        assert instance.computed_new_arbitrary_param == 9
+        assert instance.computed_test_arbitrary_param == 9
 
     def test_config_init_unaccounted_parameter_check(self, setup_mock_config_dict_CartPole, config_ampcc):
         with pytest.raises(AssertionError):

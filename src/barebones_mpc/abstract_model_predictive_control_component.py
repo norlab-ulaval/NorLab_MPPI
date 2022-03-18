@@ -8,7 +8,7 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
     _config: Dict
 
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
     @classmethod
     @abstractmethod
@@ -44,7 +44,7 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
 
         Exemple
 
-        >>>     def _config_init_callback(self, config: Dict, subclass_config: Dict, value_from_config: Dict) -> Dict:
+        >>>     def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
         >>>     horizon: int = subclass_config['horizon']
         >>>     time_step: int = subclass_config['steps_per_prediction']
         >>>     input_shape: tuple = config['environment']['input_space']['shape']
@@ -79,8 +79,12 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         # ... Fetch subclass __init__ signature and corresponding value ................................................
         subclasse_init_param_list = list(cls.__init__.__code__.co_varnames)
         subclasse_init_param_list.remove('self')
-        signature_values_from_config = {param: value for param, value in subclass_config.items() if
-                                        param in subclasse_init_param_list}
+
+        try:
+            signature_values_from_config = {param: value for param, value in subclass_config.items() if
+                                            param in subclasse_init_param_list}
+        except AttributeError as e:
+            signature_values_from_config = {}
 
         signature_values_from_callback = cls._config_init_callback(cls, config=config,
                                                                    subclass_config=subclass_config,

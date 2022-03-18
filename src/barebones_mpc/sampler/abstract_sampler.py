@@ -14,6 +14,8 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
     def __init__(self, model: Type[AbstractModel], number_samples: int, input_dimension: int, sample_length: int,
                  init_state: np.ndarray, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.number_samples = number_samples
         self.input_dimension = input_dimension
         self.sample_length = sample_length
