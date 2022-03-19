@@ -29,7 +29,6 @@ class TestMockNominalPathBoostrap:
         MockNominalPathBootstrap(sample_length=config_nominal_path.sample_length,
                                  input_shape=config_nominal_path.discrete_input_space)
 
-
     def test_config_init(self, setup_mock_config_dict_CartPole):
         instance = MockNominalPathBootstrap.config_init(config=setup_mock_config_dict_CartPole)
         assert isinstance(instance, AbstractNominalPathBootstrap)
@@ -37,7 +36,7 @@ class TestMockNominalPathBoostrap:
     def test_config_init_environment_FAIL(self, config_nominal_path):
         with pytest.raises(NotImplementedError):
             config_nominal_path.config['environment']['type'] = 'NOT_gym'
-            MockNominalPathBootstrap.config_init(config=config_nominal_path.config,)
+            MockNominalPathBootstrap.config_init(config=config_nominal_path.config, )
 
     def test_execute(self, setup_mock_config_dict_CartPole, config_nominal_path):
         instance = MockNominalPathBootstrap.config_init(config=setup_mock_config_dict_CartPole)

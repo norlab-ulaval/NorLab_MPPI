@@ -32,7 +32,8 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
     def _init_method_registred_param(cls) -> List[str]:
         return ['self', 'model', 'number_samples', 'input_dimension', 'sample_length', 'init_state']
 
-    def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
+    def _config_pre_init_callback(self, config: Dict, subclass_config: Dict,
+                                  signature_values_from_config: Dict) -> Dict:
         horizon: int = subclass_config['horizon']
         time_step: int = subclass_config['steps_per_prediction']
         input_shape: tuple = config['environment']['input_space']['shape']
@@ -44,6 +45,9 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
             }
 
         return values_from_callback
+
+    def _config_post_init_callback(self, config: Dict) -> None:
+        pass
 
     @classmethod
     def config_init(cls, config: Dict, model: Type[AbstractModel], *args, **kwargs):
@@ -74,7 +78,6 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
 class MockSampler(AbstractSampler):
     """ For testing purpose only"""
-    env: None
 
     def __init__(self, model, number_samples, input_dimension, sample_length, init_state,
                  test_arbitrary_param: Tuple[int] = (1, 2, 3,)):
@@ -83,6 +86,7 @@ class MockSampler(AbstractSampler):
 
         self.computed_test_arbitrary_param = (np.array(list(test_arbitrary_param))).sum()
 
+    def _config_post_init_callback(self, config: Dict) -> None:
         try:
             if self._config['environment']['type'] == 'gym':
                 self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config['environment']['name'])

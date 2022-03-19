@@ -6,7 +6,7 @@ import yaml
 
 
 def test_config_file_test_schema_PASS():
-    with open('tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml', 'r') as f:
+    with open('tests/tests_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml', 'r') as f:
         config = dict(yaml.safe_load(f))
 
     print(config)

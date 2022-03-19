@@ -7,24 +7,24 @@ from src.barebones_mpc.controller.controler import ModelPredictiveControler
 
 @pytest.fixture(scope="function")
 def setup_mock_barebones_mpc():
-    config_path = "tests/test_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
+    config_path = "tests/tests_barebones_mpc/config_files/default_test_config_CartPole-v1.yaml"
     return config_path
 
 # model_cls=MockModel, sampler_cls=MockSampler, evaluator_cls=MockEvaluator, selector_cls=MockSelector,
 
 # @pytest.mark.skip(reason="Todo: mute for now")
-def test_ModelPredictiveControler_init_PASS(setup_mock_barebones_mpc):
+def test_MPC_controler_init_PASS(setup_mock_barebones_mpc):
     config_path = setup_mock_barebones_mpc
     ModelPredictiveControler(config_path=config_path)
 
 
-def test_ModelPredictiveControler_init_arg_config_path_exist_FAIL(setup_mock_barebones_mpc):
-    config_path = "tests/test_barebones_mpc/BROKEN_PATH/default_test_config_Pendulum-v1.yaml"
+def test_MPC_controler_init_arg_config_path_exist_FAIL(setup_mock_barebones_mpc):
+    config_path = "tests/tests_barebones_mpc/BROKEN_PATH/default_test_config_Pendulum-v1.yaml"
     with pytest.raises(AssertionError):
         ModelPredictiveControler(config_path=config_path)
 
-def test_ModelPredictiveControler_init_arg_component_is_subclass_FAIL(setup_mock_barebones_mpc):
-    config_path = "tests/test_barebones_mpc/config_files/broken_test_config.yaml"
+def test_MPC_controler_init_arg_component_is_subclass_FAIL(setup_mock_barebones_mpc):
+    config_path = "tests/tests_barebones_mpc/config_files/broken_test_config.yaml"
     with pytest.raises(AssertionError):
         # model_cls = dict, sampler_cls = dict, evaluator_cls = dict,; selector_cls = dict,
         ModelPredictiveControler(config_path=config_path)

@@ -26,7 +26,8 @@ class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent)
     def _init_method_registred_param(cls) -> List[str]:
         return ['self', 'sample_length', 'input_shape']
 
-    def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
+    def _config_pre_init_callback(self, config: Dict, subclass_config: Dict,
+                                  signature_values_from_config: Dict) -> Dict:
         horizon = config['hparam']['sampler_hparam']['horizon']
         time_step = config['hparam']['sampler_hparam']['steps_per_prediction']
         values_from_callback = {
@@ -34,6 +35,9 @@ class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent)
             'input_shape':   config['environment']['input_space']['shape'],
             }
         return values_from_callback
+
+    def _config_post_init_callback(self, config: Dict) -> None:
+        pass
 
     @abstractmethod
     def execute(self) -> Tuple[Any, Any]:
@@ -47,11 +51,12 @@ class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent)
 
 class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
     """ For testing purpose only"""
-    env: None
 
     def __init__(self, sample_length, input_shape):
         super().__init__(sample_length, input_shape)
 
+    def _config_post_init_callback(self, config: Dict) -> None:
+        super()._config_post_init_callback(config)
         try:
             if self._config['environment']['type'] == 'gym':
                 self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config['environment']['name'])

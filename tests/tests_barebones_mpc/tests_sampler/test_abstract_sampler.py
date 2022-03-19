@@ -17,7 +17,8 @@ class ConfigSampler:
     number_samples: int = 1000
     input_dimension: int = 1
     sample_length: int = int(0.75/(1/20))
-    model: MockModel = MockModel()
+    model: Type[MockModel] = MockModel()
+    # model: MockModel = MockModel(1, 1, 1)
 
 
 @pytest.fixture(scope="function")

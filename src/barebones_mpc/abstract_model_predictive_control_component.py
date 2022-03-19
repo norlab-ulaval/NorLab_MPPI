@@ -5,10 +5,15 @@ from typing import Any, Dict, List
 
 
 class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
-    _config: Dict
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+
+        self._config = None
+
+    @classmethod
+    def ERR_S(cls) -> str:
+        return f"({cls.__qualname__} ERROR): "
 
     @classmethod
     @abstractmethod
@@ -39,12 +44,14 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
+    def _config_pre_init_callback(self, config: Dict, subclass_config: Dict,
+                                  signature_values_from_config: Dict) -> Dict:
         """ Add any custom code that you want executed with the config value just before object instanciation.
 
         Exemple
 
-        >>>     def _config_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict) -> Dict:
+        >>>     def _config_pre_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config:
+        Dict) -> Dict:
         >>>     horizon: int = subclass_config['horizon']
         >>>     time_step: int = subclass_config['steps_per_prediction']
         >>>     input_shape: tuple = config['environment']['input_space']['shape']
@@ -63,6 +70,28 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         """
         pass
 
+    @abstractmethod
+    def _config_post_init_callback(self, config: Dict) -> None:
+        """ Add any custom code that you want executed with the config value just after object instanciation.
+
+        Exemple
+
+        >>>     def _config_post_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config:
+        Dict) -> None:
+        >>>     try:
+        >>>         if self._config['environment']['type'] == 'gym':
+        >>>             self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config['environment']['name'])
+        >>>         else:
+        >>>             raise NotImplementedError
+        >>>     except AttributeError:
+        >>>         pass
+        >>>
+        >>>     return None
+
+        :param config: the complete configuration dictionary
+        """
+        pass
+
     @classmethod
     def config_init(cls, config: Dict, *args, **kwargs):
         """
@@ -73,7 +102,6 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         :param args: pass arbitrary argument to the baseclass init method
         :param kwargs: pass arbitrary keyword argument to the baseclass init method
         """
-        cls._config = config
         subclass_config = config['hparam'][cls._subclass_config_key()]
 
         # ... Fetch subclass __init__ signature and corresponding value ................................................
@@ -86,9 +114,9 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         except AttributeError as e:
             signature_values_from_config = {}
 
-        signature_values_from_callback = cls._config_init_callback(cls, config=config,
-                                                                   subclass_config=subclass_config,
-                                                                   signature_values_from_config=signature_values_from_config)
+        signature_values_from_callback = cls._config_pre_init_callback(cls, config=config,
+                                                                       subclass_config=subclass_config,
+                                                                       signature_values_from_config=signature_values_from_config)
 
         kwargs.update(signature_values_from_config)
         kwargs.update(signature_values_from_callback)
@@ -100,8 +128,7 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
             f"{unaccounted_param}")
 
         instance = cls(*args, **kwargs)
-        return instance
+        instance._config = config
+        instance._config_post_init_callback(config=config)
 
-    @classmethod
-    def ERR_S(cls) -> str:
-        return f"({cls.__qualname__} ERROR): "
+        return instance

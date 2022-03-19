@@ -49,7 +49,7 @@ class ModelPredictiveControler(object):
             f'{ERR_S} argument passed to param \'selector_cls\' must be a subclass of \'AbstractSelector\'')
 
         self.model = model_cls.config_init(self.config)
-        self.sampler = sampler_cls.config_init(self.model, self.config)
+        self.sampler = sampler_cls.config_init(model=self.model, config=self.config)
         self.evaluator = evaluator_cls.config_init(self.config)
         self.selector = selector_cls.config_init(self.config)
         self.environment = self._setup_environment()

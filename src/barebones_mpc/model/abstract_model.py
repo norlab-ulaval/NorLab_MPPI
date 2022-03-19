@@ -1,10 +1,32 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
+from typing import Dict, List
 
-class AbstractModel(metaclass=ABCMeta):
+from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
+
+
+class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
+
+    # def __init__(self, time_step, number_samples, sample_length):
     def __init__(self):
         self.state_dimension = None
         self.input_dimension = None
         self.time_step = None
+
+    @classmethod
+    def _subclass_config_key(cls) -> str:
+        return 'model_hparam'
+
+    @classmethod
+    def _init_method_registred_param(cls) -> List[str]:
+        return ['self', 'state_dimension', 'input_dimension', 'time_step']
+
+    def _config_pre_init_callback(self, config: Dict, subclass_config: Dict,
+                                  signature_values_from_config: Dict) -> Dict:
+        # raise NotImplementedError   # todo: implement
+        pass
+
+    def _config_post_init_callback(self, config: Dict) -> None:
+        pass
 
     @abstractmethod
     def predict_states(self, init_state, sample_input):
