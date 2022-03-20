@@ -11,9 +11,16 @@ from src.barebones_mpc.config_files.config_utils import import_controler_compone
 
 
 class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
-
-    def __init__(self, model: Type[AbstractModel], number_samples: int, input_dimension: int, sample_length: int,
-                 init_state: np.ndarray, *args, **kwargs):
+    def __init__(
+        self,
+        model: Type[AbstractModel],
+        number_samples: int,
+        input_dimension: int,
+        sample_length: int,
+        init_state: np.ndarray,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
 
         self.number_samples = number_samples
@@ -26,23 +33,22 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
     @classmethod
     def _subclass_config_key(cls) -> str:
-        return 'sampler_hparam'
+        return "sampler_hparam"
 
     @classmethod
-    def _init_method_registred_param(cls) -> List[str]:
-        return ['self', 'model', 'number_samples', 'input_dimension', 'sample_length', 'init_state']
+    def _config_file_required_field(cls) -> List[str]:
+        return ["number_samples", "horizon", "steps_per_prediction"]
 
-    def _config_pre_init_callback(self, config: Dict, subclass_config: Dict,
-                                  signature_values_from_config: Dict) -> Dict:
-        horizon: int = subclass_config['horizon']
-        time_step: int = subclass_config['steps_per_prediction']
-        input_shape: tuple = config['environment']['input_space']['shape']
-
+    def _config_pre_init_callback(
+        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
+    ) -> Dict:
+        horizon: int = subclass_config["horizon"]
+        time_step: int = subclass_config["steps_per_prediction"]
         values_from_callback = {
-            'sample_length':   int(horizon/time_step),
-            'init_state':      np.zeros(config['environment']['observation_space']['shape'][0]),
-            'input_dimension': len(input_shape),
-            }
+            "input_dimension": config["environment"]["input_space"]["dim"],
+            "sample_length": int(horizon / time_step),
+            "init_state": np.zeros(config["environment"]["observation_space"]["dim"]),
+        }
 
         return values_from_callback
 
@@ -51,7 +57,9 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
     @classmethod
     def config_init(cls, config: Dict, model: Type[AbstractModel], *args, **kwargs):
-        kwargs.update({'model': import_controler_component_class(config, 'model')()})
+        # kwargs.update({'model': import_controler_component_class(config, 'model')()})
+        model_class = import_controler_component_class(config, "model")
+        kwargs.update({"model": model_class.config_init(config=config)})
         return super().config_init(config, *args, **kwargs)
 
     @abstractmethod
@@ -79,25 +87,35 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 class MockSampler(AbstractSampler):
     """ For testing purpose only"""
 
-    def __init__(self, model, number_samples, input_dimension, sample_length, init_state,
-                 test_arbitrary_param: Tuple[int] = (1, 2, 3,)):
+    def __init__(
+        self,
+        model,
+        number_samples,
+        input_dimension,
+        sample_length,
+        init_state,
+        test_arbitrary_param: Tuple[int] = (1, 2, 3,),
+    ):
 
         super().__init__(model, number_samples, input_dimension, sample_length, init_state)
 
+        # for unit testing  of base class AbstractModelPredictiveControlComponent in
+        #   test_abstract_model_predictive_control_component.py
         self.computed_test_arbitrary_param = (np.array(list(test_arbitrary_param))).sum()
 
     def _config_post_init_callback(self, config: Dict) -> None:
         try:
-            if self._config['environment']['type'] == 'gym':
-                self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config['environment']['name'])
+            if self._config["environment"]["type"] == "gym":
+                self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config["environment"]["name"])
             else:
                 raise NotImplementedError
         except AttributeError:
             pass
 
     def sample_inputs(self, nominal_input):
-        sample = np.full((self.sample_length, self.number_samples + 1, self.input_dimension),
-                         self.env.action_space.sample())
+        sample = np.full(
+            (self.sample_length, self.number_samples + 1, self.input_dimension), self.env.action_space.sample()
+        )
         return sample
 
     def sample_states(self, sample_input, init_state):

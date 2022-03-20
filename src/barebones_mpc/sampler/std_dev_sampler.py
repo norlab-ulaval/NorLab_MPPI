@@ -8,7 +8,7 @@ class StandardDevSampler(AbstractSampler):
 
     def __init__(self, model: Type[AbstractModel], number_samples: int, input_dimension: int,
                  sample_length: int, init_state: np.ndarray, std_dev: float):
-        super().__init__(model, number_samples, input_dimension, sample_length, init_state)
+        super().__init__(model=model, number_samples=number_samples, input_dimension=input_dimension, sample_length=sample_length, init_state=init_state)
 
         self.std_dev = std_dev  #TODO : Define std_Dev for multiple dimensions of input
         self.sample_input = np.empty((self.sample_length, self.number_samples + 1, self.input_dimension))
