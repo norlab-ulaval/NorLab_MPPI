@@ -9,7 +9,7 @@ from gym import make as gym_make
 from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 
 
-class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent):
+class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
     config: dict
 
     def __init__(self, sample_length, input_shape, *args, **kwargs):
@@ -50,16 +50,17 @@ class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent)
         pass
 
     @abstractmethod
-    def execute(self) -> Tuple[Any, Any]:
+    def bootstrap(self, state_t0) -> Tuple[Any, Any]:
         """
         Bootstrap the initial nominal path
 
         Return (initial_nominal_input, initial_nominal_path)
+        :param state_t0:
         """
         pass
 
 
-class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
+class MockNominalPath(AbstractNominalPath):
     """ For testing purpose only"""
 
     def __init__(self, sample_length, input_shape):
@@ -75,7 +76,7 @@ class MockNominalPathBootstrap(AbstractNominalPathBootstrap):
         except AttributeError:
             pass
 
-    def execute(self) -> Tuple[int, np.ndarray]:
+    def bootstrap(self, state_t0) -> Tuple[Union[int, float, np.ndarray], np.ndarray]:
         initial_nominal_input = self.env.action_space.sample()
         initial_nominal_path = np.full(shape=(self.sample_length,), fill_value=initial_nominal_input)
         return initial_nominal_input, initial_nominal_path

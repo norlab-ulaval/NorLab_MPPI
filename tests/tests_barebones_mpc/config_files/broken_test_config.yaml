@@ -3,6 +3,7 @@
 config_name: 'broken'
 config_short_description: ""
 controler_component:
+  nominalPath: src.barebones_mpc.nominal_path.abstract.MockNominalPath
   model: src.barebones_mpc.model.abstract_model
   sampler: src.barebones_mpc.sampler.abstract_sampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator

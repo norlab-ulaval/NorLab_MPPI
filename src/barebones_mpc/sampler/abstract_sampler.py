@@ -70,7 +70,7 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
     def config_init(cls, config: Dict, model: Type[AbstractModel], *args, **kwargs):
         """
         Alternative initialization method via configuration dictionary
-        Return an instance of AbstractNominalPathBootstrap
+        Return an instance of AbstractNominalPath
         Note: This is an overloaded version of the `config_init` with the added param `model`
 
         :param config: a dictionary of configuration

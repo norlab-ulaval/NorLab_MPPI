@@ -3,6 +3,7 @@
 config_name: 'default CartPole-v1'
 config_short_description: "gym CartPole-v1 test configuragtion. Discrete"
 controler_component:
+  nominalPath: src.barebones_mpc.nominal_path.abstract.MockNominalPath
   model: src.barebones_mpc.model.abstract_model.MockModel
   sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
@@ -23,6 +24,8 @@ environment:
     dim: 1
     legal_actions: [0, 1]
 hparam:
+  controler:
+    state_t0: ~
   nominal_path_bootstrap: ~
   experimental_hparam:
     experimental_window: 15

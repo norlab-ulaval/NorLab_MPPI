@@ -100,7 +100,7 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
     def config_init(cls, config: Dict, *args, **kwargs):
         """
         Alternative initialization method via configuration dictionary
-        Return an instance of AbstractNominalPathBootstrap
+        Return an instance of AbstractNominalPath
 
         :param config: a dictionary of configuration
         :param args: pass arbitrary argument to the baseclass init method
@@ -124,7 +124,6 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         except ValueError as e:
             # No param `kwargs` in the __init__ signature
             pass
-
 
         # ... Check for required base class parameter missing from the config ..........................................
         if len(cls._config_file_required_field()) > 0:

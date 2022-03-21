@@ -1,39 +1,31 @@
 # coding=utf-8
 from abc import ABCMeta, abstractmethod
-from typing import Union, Any, Type, Tuple, List, Dict
+from typing import TypeVar, Union, Any, Type, Tuple, List, Dict
 import os
 import gym
 from gym.wrappers.monitoring.video_recorder import VideoRecorder
 import numpy as np
 from pyvirtualdisplay import Display
 
-
-def make_environment_adapter(config_dict) -> Any:
-    environment_type = config_dict['environment']['type']
-
-    if environment_type == 'gym':
-        adapted_env = GymEnvironmentAdapter(config_dict)
-    else:
-        raise NotImplementedError  # todo: implement
-
-    return adapted_env
+GYM_SPACE = TypeVar("GYM_SPACE", gym.spaces.box.Box, gym.spaces.discrete.Discrete)
 
 
 class AbstractEnvironmentAdapter(metaclass=ABCMeta):
-    _rollout_idx: int
-    _record: bool
-    _headless: bool
-    _virtual_display: Display
 
-    def __init__(self, config_dict: dict):
+    # _rollout_idx: int
+    # _record: bool
+    # _headless: bool
+    # _virtual_display: Display
+
+    def __init__(self, config_dict: Dict):
         self._config_dict = config_dict
-        self._record = self._config_dict['record']
-        self._headless = self._config_dict['force_headless_mode']
-        if self._headless and self._record and (self._config_dict['environment']['rendering_interval'] > 0):
-            self._virtual_display = Display(visible=False, size=(1400, 900))
+        self._record: bool = self._config_dict["record"]
+        self._headless: bool = self._config_dict["force_headless_mode"]
+        if self._headless and self._record and (self._config_dict["environment"]["rendering_interval"] > 0):
+            self._virtual_display: Display = Display(visible=False, size=(1400, 900))
             self._virtual_display.start()
 
-        self._rollout_idx = 0
+        self._rollout_idx: int = 0
         self._env = self._make()
         self.observation_space = self._init_observation_space()
         self.action_space = self._init_action_space()
@@ -47,7 +39,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _init_observation_space(self) -> Type[gym.spaces.Space]:
+    def _init_observation_space(self) -> Union[GYM_SPACE, Any]:
         """
         Implement the environnement observation space.
         Must comply with `gym.spaces.Space`
@@ -66,7 +58,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _init_action_space(self) -> Type[gym.spaces.Space]:
+    def _init_action_space(self) -> Union[GYM_SPACE, Any]:
         """
         Implement the environnement input space.
         Must comply with `gym.spaces.Space`
@@ -123,7 +115,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def render(self, mode: str = 'human') -> None:
+    def render(self, mode: str = "human") -> None:
         pass
 
     @abstractmethod
@@ -138,7 +130,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         Teardown process executed at environment clossing
         """
         self._close()
-        if self._headless and self._record and (self._config_dict['environment']['rendering_interval'] > 0):
+        if self._headless and self._record and (self._config_dict["environment"]["rendering_interval"] > 0):
             self._virtual_display.stop()
         return None
 
@@ -150,7 +142,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
 class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
     _recorder: VideoRecorder
 
-    def __init__(self, config_dict):
+    def __init__(self, config_dict: Dict) -> None:
         """
         Adapter for gym environment. Specification are fetch from the configuration file
 
@@ -175,18 +167,22 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
 
         ### Action Space
 
-        The action is a `ndarray` with shape `(1,)` which can take values `{0, 1}` indicating the direction of the fixed force the cart is pushed with.
+        The action is a `ndarray` with shape `(1,)` which can take values `{0, 1}` indicating the direction of the
+        fixed force the cart is pushed with.
 
         | Num | Action                 |
         |-----|------------------------|
         | 0   | Push cart to the left  |
         | 1   | Push cart to the right |
 
-        **Note**: The velocity that is reduced or increased by the applied force is not fixed and it depends on the angle the pole is pointing. The center of gravity of the pole varies the amount of energy needed to move the cart underneath it
+        **Note**: The velocity that is reduced or increased by the applied force is not fixed and it depends on the
+        angle the pole is pointing. The center of gravity of the pole varies the amount of energy needed to move the
+        cart underneath it
 
         ### Observation Space
 
-        The observation is a `ndarray` with shape `(4,)` with the values corresponding to the following positions and velocities:
+        The observation is a `ndarray` with shape `(4,)` with the values corresponding to the following positions and
+        velocities:
 
         | Num | Observation           | Min                  | Max                |
         |-----|-----------------------|----------------------|--------------------|
@@ -195,9 +191,12 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         | 2   | Pole Angle            | ~ -0.418 rad (-24°)  | ~ 0.418 rad (24°)  |
         | 3   | Pole Angular Velocity | -Inf                 | Inf                |
 
-        **Note:** While the ranges above denote the possible values for observation space of each element, it is not reflective of the allowed values of the state space in an unterminated episode. Particularly:
-        -  The cart x-position (index 0) can be take values between `(-4.8, 4.8)`, but the episode terminates if the cart leaves the `(-2.4, 2.4)` range.
-        -  The pole angle can be observed between  `(-.418, .418)` radians (or **±24°**), but the episode terminates if the pole angle is not in the range `(-.2095, .2095)` (or **±12°**)
+        **Note:** While the ranges above denote the possible values for observation space of each element,
+        it is not reflective of the allowed values of the state space in an unterminated episode. Particularly:
+        -  The cart x-position (index 0) can be take values between `(-4.8, 4.8)`, but the episode terminates if the
+        cart leaves the `(-2.4, 2.4)` range.
+        -  The pole angle can be observed between  `(-.418, .418)` radians (or **±24°**), but the episode terminates
+        if the pole angle is not in the range `(-.2095, .2095)` (or **±12°**)
 
         ----
 
@@ -239,27 +238,27 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         """
         super().__init__(config_dict=config_dict)
 
-    def _make(self) -> Type[gym.wrappers.time_limit.TimeLimit]:
-        config_name = self._config_dict['config_name'].replace(" ", "_")
-        env = gym.make(self._config_dict['environment']['name'])
+    def _make(self,):
+        config_name = self._config_dict["config_name"].replace(" ", "_")
+        env = gym.make(self._config_dict["environment"]["name"])
         if self._record:
-            print('os.getcwd() >>>', os.getcwd())
+            print("os.getcwd() >>>", os.getcwd())
 
-            video_recording_path = os.path.join('experiment', config_name, 'video')
+            video_recording_path = os.path.join("experiment", config_name, "video")
             if not os.path.exists(video_recording_path):
                 os.makedirs(video_recording_path)
 
-            recording_name = '{}_{}.mp4'.format(config_name, self._rollout_idx)
+            recording_name = "{}_{}.mp4".format(config_name, self._rollout_idx)
             recording_path = os.path.join(video_recording_path, recording_name)
 
             self._recorder = VideoRecorder(env, recording_path)
 
         return env
 
-    def _init_observation_space(self) -> Type[gym.spaces.Space]:
+    def _init_observation_space(self) -> GYM_SPACE:
         return self._env.observation_space
 
-    def _init_action_space(self) -> Type[gym.spaces.Space]:
+    def _init_action_space(self) -> GYM_SPACE:
         return self._env.action_space
 
     def step(self, input) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
@@ -269,8 +268,8 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         self._rollout_idx += 1
         return self._env.reset()
 
-    def render(self, mode: str = 'human') -> None:
-        if self._record and (self._config_dict['environment']['rendering_interval'] > 0):
+    def render(self, mode: str = "human") -> None:
+        if self._record and (self._config_dict["environment"]["rendering_interval"] > 0):
             self._recorder.capture_frame()
         elif not self._headless:
             self._env.render(mode=mode)
@@ -281,3 +280,20 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
             self._recorder.close()
         self._env.close()
         return None
+
+
+def make_environment_adapter(config_dict: Dict) -> AbstractEnvironmentAdapter:
+    """
+    Factory of environment adapter
+
+    :param config_dict: a configuration dictionary
+    :return: An instance of a subclass of AbstractEnvironmentAdapter
+    """
+    environment_type = config_dict["environment"]["type"]
+
+    if environment_type == "gym":
+        adapted_env = GymEnvironmentAdapter(config_dict)
+    else:
+        raise NotImplementedError  # todo: implement
+
+    return adapted_env
