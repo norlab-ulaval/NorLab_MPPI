@@ -1,9 +1,19 @@
+from typing import List
+
 from src.barebones_mpc.model.abstract_model import AbstractModel
 import numpy as np
 
 
 class InvPendulumModel(AbstractModel):
-    def __init__(self, time_step, number_samples, sample_length, state_dimension, cart_mass, pendulum_mass):
+    def __init__(
+        self,
+        time_step: int,
+        number_samples: int,
+        sample_length: int,
+        state_dimension: int,
+        cart_mass: int,
+        pendulum_mass: int,
+    ):
         """ Inverted pendulum model. The states are [y, v, theta, q], input is [u]
         y: cart position
         v: cart velocity
@@ -12,6 +22,13 @@ class InvPendulumModel(AbstractModel):
         u: force applied to the cart
 
         """
+        super().__init__(
+            time_step=time_step,
+            number_samples=number_samples,
+            sample_length=sample_length,
+            state_dimension=state_dimension,
+        )
+
         self.time_step = time_step
         self.number_samples = number_samples
         self.sample_length = sample_length
@@ -28,6 +45,12 @@ class InvPendulumModel(AbstractModel):
         self.input_transition = np.array([0, 1, 0, -1]).reshape((4, 1))
 
         self.sample_states = np.empty((self.sample_length + 1, self.number_samples, self.state_dimension))
+
+    @classmethod
+    def _config_file_required_field(cls) -> List[str]:
+        required_field: List[str] = super()._config_file_required_field()
+        required_field.extend(["cart_mass", "pendulum_mass"])
+        return required_field
 
     def predict_states(self, init_state, sample_input):
         """ predicts a sample state array based on a nominal input array

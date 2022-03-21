@@ -7,10 +7,8 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 
 
 class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
-
-    # def __init__(self):
-    def __init__(self, time_step, number_samples, sample_length, state_dimension):
-        super().__init__()
+    def __init__(self, time_step: int, number_samples: int, sample_length: int, state_dimension: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.time_step = time_step
         self.number_samples = number_samples
         self.sample_length = sample_length
@@ -27,8 +25,8 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
         return []
 
     def _config_pre_init_callback(
-            self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
-            ) -> Dict:
+        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
+    ) -> Dict:
 
         try:
             observation_dim: int = config["environment"]["observation_space"]["dim"]
@@ -41,14 +39,14 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
                 f"both following key exist: "
                 f"`environment:observation_space:dim`, `hparam:sampler_hparam:horizon` and "
                 f"`hparam:sampler_hparam:steps_per_prediction`"
-                ) from e
+            ) from e
 
         values_from_callback = {
-            "sample_length": int(horizon/time_step),
+            "sample_length": int(horizon / time_step),
             "time_step": time_step,
             "state_dimension": observation_dim,
-            "number_samples": number_samples
-            }
+            "number_samples": number_samples,
+        }
 
         return values_from_callback
 
@@ -80,7 +78,6 @@ class MockModel(AbstractModel):
     """ For testing purpose only """
 
     def predict_states(self, init_state, sample_input):
-        # raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo
         # return np.array(
         #     [
         #         [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
@@ -93,7 +90,7 @@ class MockModel(AbstractModel):
         #         ],
         #     ]
         # )
-        return np.empty((self.sample_length + 1, self.number_samples, self.state_dimension))
+        return np.zeros((self.sample_length + 1, self.number_samples, self.state_dimension))
 
     def _predict(self, init_state, initial_input):
-        raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo
+        return np.zeros((self.state_dimension, 1))

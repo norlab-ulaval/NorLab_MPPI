@@ -36,7 +36,7 @@ class TestMockModel:
             time_step=config_model.time_step,
             number_samples=config_model.number_samples,
             sample_length=config_model.sample_length,
-            state_dimension=config_model.state_dimension
+            state_dimension=config_model.state_dimension,
         )
 
     def test_config_init(self, setup_mock_config_dict_CartPole, config_model):

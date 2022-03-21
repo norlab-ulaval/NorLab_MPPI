@@ -32,11 +32,17 @@ hparam:
     number_samples: 1000
     horizon: 0.75
     steps_per_prediction: 0.05
-    std_dev: [1.5]
+    std_dev: 1.5
     test_arbitrary_param: [3, 3, 3]
   model_hparam:
     cart_mass: 1
     pendulum_mass: 1
+  evaluator_hparam:
+    std_dev: 0.1
+    beta: 0
+    inverse_temperature: 0.01
+    state_weights: 1.0
+  selector_hparam: ~
 constraints:
   input_constraint:
     input_space_dim:

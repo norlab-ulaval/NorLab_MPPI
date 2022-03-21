@@ -1,10 +1,15 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
+
+from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 
 
-class AbstractSelector(metaclass=ABCMeta):
-
+class AbstractSelector(ABC, AbstractModelPredictiveControlComponent):
     def __init__(self, number_samples):
         self.number_samples = number_samples
+
+    @classmethod
+    def _subclass_config_key(cls) -> str:
+        return "selector_hparam"
 
     @abstractmethod
     def select_next_input(self, sample_cost):
@@ -25,7 +30,8 @@ class MockSelector(AbstractSelector):
         super().__init__(number_samples)
 
         import gym
-        self.env = gym.make('Pendulum-v1')
+
+        self.env = gym.make("Pendulum-v1")
 
     def select_next_input(self, sample_cost):
         return self.env.action_space.sample(), True

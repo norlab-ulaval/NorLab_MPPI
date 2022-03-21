@@ -42,12 +42,22 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
     def _config_pre_init_callback(
         self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
     ) -> Dict:
+        try:
+            input_dimension: int = config["environment"]["input_space"]["dim"]
+            observation_dim: int = config["environment"]["observation_space"]["dim"]
+        except KeyError as e:
+            raise KeyError(
+                f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
+                f"both following key exist: "
+                f"`environment:input_space:dim`,`environment:observation_space:dim`, "
+            ) from e
+
         horizon: int = subclass_config["horizon"]
         time_step: int = subclass_config["steps_per_prediction"]
         values_from_callback = {
-            "input_dimension": config["environment"]["input_space"]["dim"],
+            "input_dimension": input_dimension,
+            "init_state": np.zeros(observation_dim),
             "sample_length": int(horizon / time_step),
-            "init_state": np.zeros(config["environment"]["observation_space"]["dim"]),
         }
 
         return values_from_callback
@@ -57,6 +67,16 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
     @classmethod
     def config_init(cls, config: Dict, model: Type[AbstractModel], *args, **kwargs):
+        """
+        Alternative initialization method via configuration dictionary
+        Return an instance of AbstractNominalPathBootstrap
+        Note: This is an overloaded version of the `config_init` with the added param `model`
+
+        :param config: a dictionary of configuration
+        :param model:
+        :param args: pass arbitrary argument to the baseclass init method
+        :param kwargs: pass arbitrary keyword argument to the baseclass init method
+        """
         # kwargs.update({'model': import_controler_component_class(config, 'model')()})
         model_class = import_controler_component_class(config, "model")
         kwargs.update({"model": model_class.config_init(config=config)})
@@ -102,6 +122,12 @@ class MockSampler(AbstractSampler):
         # for unit testing  of base class AbstractModelPredictiveControlComponent in
         #   test_abstract_model_predictive_control_component.py
         self.computed_test_arbitrary_param = (np.array(list(test_arbitrary_param))).sum()
+
+    @classmethod
+    def _config_file_required_field(cls) -> List[str]:
+        required_field: List[str] = super()._config_file_required_field()
+        required_field.extend(["test_arbitrary_param"])
+        return required_field
 
     def _config_post_init_callback(self, config: Dict) -> None:
         try:

@@ -39,7 +39,7 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         >>> class MyCoolMPCComponent:
         >>>    @classmethod
         >>>    def _config_file_required_field(cls) -> List[str]:
-        >>>        return ['self', 'model', 'number_samples', 'input_dimension', 'sample_length', 'init_state']
+        >>>        return ['number_samples', 'sample_length', 'input_dimension']
 
         """
         pass
@@ -113,6 +113,16 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         # ... Fetch subclass __init__ signature and corresponding value ................................................
         subclasse_init_param_list = list(cls.__init__.__code__.co_varnames)
         subclasse_init_param_list.remove("self")
+
+        try:
+            subclasse_init_param_list.remove("args")
+        except ValueError as e:
+            pass
+        try:
+            subclasse_init_param_list.remove("kwargs")
+        except ValueError as e:
+            pass
+
 
         # ... Check for required base class parameter missing from the config ..........................................
         if len(cls._config_file_required_field()) > 0:
