@@ -11,7 +11,7 @@ class QuadraticEvaluator(AbstractEvaluator):
         input_dimension: int,
         sample_length: int,
         state_dimension: int,
-        std_dev: np.ndarray,
+        std_dev: Union[float,np.ndarray],
         beta: int,
         inverse_temperature: float,
         state_weights: Union[np.ndarray, float],
@@ -67,17 +67,17 @@ class QuadraticEvaluator(AbstractEvaluator):
         )
 
         values_from_callback.update({
-            "state_weights": subclass_config["state_weights"],
+            # "state_weights": subclass_config["state_weights"], # ToDo:investigate??
             "reference_state": np.zeros(shape=(values_from_callback["state_dimension"]))
             })
         return values_from_callback
 
-    def compute_sample_costs(self, sample_input, sample_states):
+    def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
         """ computes the cost related to every sample
 
         :param sample_input: sample input array
-        :param sample_state: sample state array
-        :return sample cost array
+        :param sample_states: sample state array
+        :return None
         """
         for j in range(0, self.number_samples):
             for i in range(0, self.sample_length):
@@ -86,17 +86,19 @@ class QuadraticEvaluator(AbstractEvaluator):
                 ) + self.compute_input_cost(sample_input[i, j, :])
             self.sample_total_costs[0, j] = np.sum(self.sample_costs[:, j])
 
-    def compute_input_cost(self, input):
+        return None
+
+    def compute_input_cost(self, input: np.ndarray) -> float:
         """ computes a single input cost via a quadratic input cost
 
         :param input: single input array
         :return input_cost: input cost
         """
-        return self.half_inverse_temperature * (
-            input.transpose() @ self.input_covariance_inverse @ input + self.beta.transpose() @ input
-        )
+        cost_array = self.half_inverse_temperature*(
+                    input.transpose()@self.input_covariance_inverse@input + self.beta.transpose()@input)
+        return cost_array[0]
 
-    def compute_state_cost(self, state, reference):
+    def compute_state_cost(self, state: np.ndarray, reference: np.ndarray) -> float:
         """ compute a single state cost via a quadartic state cost
 
         :param state: single state array
@@ -105,7 +107,7 @@ class QuadraticEvaluator(AbstractEvaluator):
         error = state - reference
         return error.transpose() @ self.state_weights @ error
 
-    def compute_final_state_cost(self, final_state):
+    def compute_final_state_cost(self, final_state: np.ndarray) -> float:
         """ compute a final state cost
 
         :param final_state: final state array

@@ -1,7 +1,9 @@
 # coding=utf-8
 
 from abc import ABC, ABCMeta, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Union
+
+import numpy as np
 
 from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 
@@ -56,17 +58,17 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def compute_sample_costs(self, sample_input, sample_states):
+    def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
         """ computes the cost related to every sample
 
         :param sample_input: sample input array
-        :param sample_state: sample state array
-        :return sample cost array
+        :param sample_states: sample state array
+        :return None
         """
         pass
 
     @abstractmethod
-    def compute_input_cost(self, input):
+    def compute_input_cost(self, input: np.ndarray) -> Union[float, np.ndarray]:
         """ computes a single input cost
 
         :param input: single input array
@@ -75,7 +77,7 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def compute_state_cost(self, state):
+    def compute_state_cost(self, state: np.ndarray) -> float:
         """ compute a single state cost
 
         :param state: single state array
@@ -84,7 +86,7 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def compute_final_state_cost(self, final_state):
+    def compute_final_state_cost(self, final_state: np.ndarray) -> float:
         """ compute a final state cost
 
         :param final_state: final state array
@@ -96,14 +98,14 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
 class MockEvaluator(AbstractEvaluator):
     """ For testing purpose only"""
 
-    def compute_sample_costs(self, sample_input, sample_states):
-        raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo
+    def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
+        return None
 
-    def compute_input_cost(self, input):
-        raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo
+    def compute_input_cost(self, input: np.ndarray) -> float:
+        return np.random.random((1,))
 
-    def compute_state_cost(self, state):
-        raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo
+    def compute_state_cost(self, state: np.ndarray) -> float:
+        return np.random.random((1,))
 
-    def compute_final_state_cost(self, final_state):
+    def compute_final_state_cost(self, final_state: np.ndarray) -> float:
         raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo

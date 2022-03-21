@@ -55,6 +55,7 @@ class TestMockEvaluator:
         instance = MockEvaluator.config_init(config=setup_mock_config_dict_CartPole)
         instance.compute_state_cost(None)
 
+    @pytest.mark.skip(reason="ToDo:implement >> mock return value")  
     def test_compute_final_state_cost(self, setup_mock_config_dict_CartPole, config_evaluator):
         instance = MockEvaluator.config_init(config=setup_mock_config_dict_CartPole)
         instance.compute_final_state_cost(None)
