@@ -38,7 +38,8 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
                 f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
                 f"`environment:observation_space:dim`, `hparam:sampler_hparam:horizon` and "
-                f"`hparam:sampler_hparam:steps_per_prediction`"
+                f"`hparam:sampler_hparam:steps_per_prediction`\n"
+                f"{e}"
             ) from e
 
         values_from_callback = {

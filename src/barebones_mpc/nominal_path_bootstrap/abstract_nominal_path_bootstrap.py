@@ -36,7 +36,8 @@ class AbstractNominalPathBootstrap(ABC, AbstractModelPredictiveControlComponent)
             raise KeyError(
                 f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
-                f"`hparam:sampler_hparam:horizon` and `hparam:sampler_hparam:steps_per_prediction`"
+                f"`hparam:sampler_hparam:horizon` and `hparam:sampler_hparam:steps_per_prediction`\n"
+                f"{e}"
             ) from e
 
         values_from_callback = {

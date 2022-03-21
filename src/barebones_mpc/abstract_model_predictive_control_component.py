@@ -117,10 +117,12 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         try:
             subclasse_init_param_list.remove("args")
         except ValueError as e:
+            # No param `args` in the __init__ signature
             pass
         try:
             subclasse_init_param_list.remove("kwargs")
         except ValueError as e:
+            # No param `kwargs` in the __init__ signature
             pass
 
 
@@ -152,8 +154,9 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         except TypeError as e:
             raise TypeError(
                 f"{cls.ERR_S()} Something is wrong with the `{cls.__qualname__}._config_pre_init_callback()` return "
-                f"value. Be sure to return a dict"
-            )
+                f"value. Be sure to return a dict\n"
+                f"{e}"
+            ) from e
 
         # ... unaccounted parameter check ..............................................................................
         unaccounted_param = [each for each in subclasse_init_param_list if each not in kwargs]

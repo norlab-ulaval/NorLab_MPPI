@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Dict, List, Union
 
 import numpy as np
@@ -43,7 +43,8 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
                 f"both following key exist: "
                 f"`environment:input_space:dim`,`environment:observation_space:dim`, "
                 f"`hparam:sampler_hparam:number_samples`, `hparam:sampler_hparam:horizon` and "
-                f"`hparam:sampler_hparam:steps_per_prediction`"
+                f"`hparam:sampler_hparam:steps_per_prediction`\n"
+                f"{e}"
             ) from e
 
         values_from_callback = {

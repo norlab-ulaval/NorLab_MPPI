@@ -49,7 +49,8 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
             raise KeyError(
                 f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
-                f"`environment:input_space:dim`,`environment:observation_space:dim`, "
+                f"`environment:input_space:dim`,`environment:observation_space:dim`\n"
+                f"{e}"
             ) from e
 
         horizon: int = subclass_config["horizon"]
