@@ -4,13 +4,14 @@ from typing import Dict, List, Tuple, Union
 import numpy as np
 from gym import wrappers as gym_wrappers
 from gym import make as gym_make
+from random import randint
 
 from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 
 
 class AbstractSelector(ABC, AbstractModelPredictiveControlComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
 
     @classmethod
     def _subclass_config_key(cls) -> str:
@@ -29,24 +30,27 @@ class AbstractSelector(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def select_next_input(self, sample_cost) -> Tuple[Union[int, float, List[Union[int, float]]], np.ndarray]:
+    def select_next_input(
+        self, sample_states, sample_inputs, sample_costs
+    ) -> Tuple[Union[int, float, List[Union[int, float]]], np.ndarray]:
         """ select the optimal next input and state arrays
 
-        :param sample_cost: sample cost array
-        :return new nominal input and nominal state arrays
+        :param sample_states: sample state array
+        :param sample_inputs:
+        :param sample_costs: sample cost array
+        :return new nominal input array and nominal state arrays
         """
-        # :param sample_state: sample state array  (legacy)
-        # :param sample_cost: sample cost array  (legacy)
         pass
 
 
 class MockSelector(AbstractSelector):
     """ For testing purpose only"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
 
     def _config_post_init_callback(self, config: Dict) -> None:
+        super()._config_post_init_callback(config)
         try:
             if self._config["environment"]["type"] == "gym":
                 self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config["environment"]["name"])
@@ -55,20 +59,8 @@ class MockSelector(AbstractSelector):
         except AttributeError:
             pass
 
-        try:
-            self.input_dimension = config["environment"]["input_space"]["dim"]
-            horizon: int = config["hparam"]["sampler_hparam"]["horizon"]
-            time_step: int = config["hparam"]["sampler_hparam"]["steps_per_prediction"]
-        except KeyError as e:
-            raise KeyError(
-                f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
-                f"both following key exist: "
-                f"`environment:input_space:dim`, `hparam:sampler_hparam:horizon`,"
-                f"`hparam:sampler_hparam:steps_per_prediction`\n"
-                f"{e}"
-            ) from e
+    def select_next_input(self, sample_states, sample_inputs, sample_costs) -> Tuple[Union[int, float], np.ndarray]:
 
-        self.sample_length = int(horizon / time_step)
+        mock_optimal_trajectory = randint(a=0, b=sample_states.shape[1])
 
-    def select_next_input(self, sample_cost) -> int:
-        return self.env.action_space.sample(), np.array(self.sample_length)
+        return sample_inputs[:, mock_optimal_trajectory, :], sample_states[:, mock_optimal_trajectory, :]

@@ -1,28 +1,10 @@
 # coding=utf-8
 
-from typing import Any, List, Type, Tuple, Dict, TypeVar, Union
+from typing import Union
 
 import numpy as np
 import pytest
 from src.barebones_mpc.selector.abstract_selector import AbstractSelector, MockSelector
-
-from dataclasses import dataclass
-
-
-@dataclass
-class ConfigSelector:
-    config: Union[dict, None]
-    number_samples: int = 1000
-    sample_total_cost: np.ndarray = np.ones((1, number_samples))
-    random_min: np.ndarray = np.random.randint(0, number_samples - 1)
-
-    def __post_init__(self):
-        self.sample_total_cost[0, self.random_min] = 0
-
-
-@pytest.fixture(scope="function")
-def config_selector(setup_mock_config_dict_CartPole):
-    return ConfigSelector(config=setup_mock_config_dict_CartPole)
 
 
 class TestMockSelector:
@@ -39,6 +21,14 @@ class TestMockSelector:
 
     def test_select_next_input(self, setup_mock_config_dict_CartPole, config_selector):
         instance = MockSelector.config_init(config=setup_mock_config_dict_CartPole)
-        nominal_input, nominal_path = instance.select_next_input(None)
-        assert type(nominal_input) is int
+        config_selector.mock_trajectories()
+
+        nominal_input, nominal_path = instance.select_next_input(
+            sample_states=config_selector.sample_state,
+            sample_inputs=config_selector.sample_input,
+            sample_costs=config_selector.sample_cost,
+        )
+        assert type(nominal_input) is np.ndarray
         assert type(nominal_path) is np.ndarray
+        assert nominal_path.shape == config_selector.sample_state[:, 0, :].shape
+        assert nominal_input.shape == config_selector.sample_input[:, 0, :].shape

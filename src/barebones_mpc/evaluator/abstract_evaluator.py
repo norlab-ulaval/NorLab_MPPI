@@ -10,9 +10,9 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 
 class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
     def __init__(
-        self, number_samples: int, input_dimension: int, sample_length: int, state_dimension: int, *args, **kwargs
+        self, number_samples: int, input_dimension: int, sample_length: int, state_dimension: int
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         self.input_dimension = input_dimension
         self.sample_length = sample_length
@@ -69,7 +69,7 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def compute_input_cost(self, input: np.ndarray) -> Union[float, np.ndarray]:
+    def _compute_input_cost(self, input: np.ndarray) -> Union[float, np.ndarray]:
         """ computes a single input cost
 
         :param input: single input array
@@ -78,7 +78,7 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def compute_state_cost(self, state: np.ndarray) -> float:
+    def _compute_state_cost(self, state: np.ndarray) -> float:
         """ compute a single state cost
 
         :param state: single state array
@@ -95,6 +95,14 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         """
         pass
 
+    @abstractmethod
+    def get_trajectories_cost(self):
+        pass
+
+    @abstractmethod
+    def get_trajectories_cumulative_cost(self):
+        pass
+
 
 class MockEvaluator(AbstractEvaluator):
     """ For testing purpose only"""
@@ -102,11 +110,17 @@ class MockEvaluator(AbstractEvaluator):
     def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
         return None
 
-    def compute_input_cost(self, input: np.ndarray) -> float:
+    def _compute_input_cost(self, input: np.ndarray) -> float:
         return np.random.random((1,))
 
-    def compute_state_cost(self, state: np.ndarray) -> float:
+    def _compute_state_cost(self, state: np.ndarray) -> float:
         return np.random.random((1,))
 
     def compute_final_state_cost(self, final_state: np.ndarray) -> float:
         raise NotImplementedError("(NICE TO HAVE) ToDo:implement >> mock return value")  # todo
+
+    def get_trajectories_cost(self):
+        return np.random.random((self.sample_length, self.number_samples))
+
+    def get_trajectories_cumulative_cost(self):
+        return np.random.random((1, self.number_samples))

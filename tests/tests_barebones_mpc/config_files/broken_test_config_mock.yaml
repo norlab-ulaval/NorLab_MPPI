@@ -3,7 +3,7 @@
 config_name: 'broken'
 config_short_description: ""
 controler_component:
-  nominalPath: src.barebones_mpc.nominal_path.abstract.MockNominalPath
+  nominalPath: src.barebones_mpc.nominal_path.abstract_NP.MockNominalPath
   model: src.barebones_mpc.model.abstract_model
   sampler: src.barebones_mpc.sampler.abstract_sampler
   evaluator: src.barebones_mpc.evaluator.abstract_evaluator
@@ -13,7 +13,7 @@ environment:
   name: 'Pendulum-v1'
   observation_space:
     max_speed: 8
-  action_space:
+  input_space:
     max_torque: 2.0
 hparam:
   experimental_hparam:

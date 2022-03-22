@@ -57,12 +57,11 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         Dict) -> Dict:
         >>>     horizon: int = subclass_config['horizon']
         >>>     time_step: int = subclass_config['steps_per_prediction']
-        >>>     input_shape: tuple = config['environment']['input_space']['shape']
         >>>
         >>>     values_from_callback = {
         >>>         'sample_length':   int(horizon/time_step),
         >>>         'init_state':      np.zeros(config['environment']['observation_space']['shape'][0]),
-        >>>         'input_dimension': len(input_shape),
+        >>>         'input_dimension': config['environment']['input_space']['dim'],
         >>>         }
         >>>
         >>>     return values_from_callback

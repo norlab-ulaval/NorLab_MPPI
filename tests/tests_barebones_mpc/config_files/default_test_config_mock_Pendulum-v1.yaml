@@ -18,6 +18,7 @@ environment:
     sin_angle: 1.0
     angular_velocity: 8.0
   input_space:
+    type: continuous
     shape: [1]
     max_torque: 2.0
 hparam: None

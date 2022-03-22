@@ -7,8 +7,8 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 
 
 class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
-    def __init__(self, time_step: int, number_samples: int, sample_length: int, state_dimension: int, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, time_step: int, number_samples: int, sample_length: int, state_dimension: int):
+        super().__init__()
         self.time_step = time_step
         self.number_samples = number_samples
         self.sample_length = sample_length

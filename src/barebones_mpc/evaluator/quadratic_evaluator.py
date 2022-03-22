@@ -81,14 +81,14 @@ class QuadraticEvaluator(AbstractEvaluator):
         """
         for j in range(0, self.number_samples):
             for i in range(0, self.sample_length):
-                self.sample_costs[i, j] = self.compute_state_cost(
+                self.sample_costs[i, j] = self._compute_state_cost(
                     sample_states[i, j, :], self.reference_state
-                ) + self.compute_input_cost(sample_input[i, j, :])
+                ) + self._compute_input_cost(sample_input[i, j, :])
             self.sample_total_costs[0, j] = np.sum(self.sample_costs[:, j])
 
         return None
 
-    def compute_input_cost(self, input: np.ndarray) -> float:
+    def _compute_input_cost(self, input: np.ndarray) -> float:
         """ computes a single input cost via a quadratic input cost
 
         :param input: single input array
@@ -98,7 +98,7 @@ class QuadraticEvaluator(AbstractEvaluator):
                     input.transpose()@self.input_covariance_inverse@input + self.beta.transpose()@input)
         return cost_array[0]
 
-    def compute_state_cost(self, state: np.ndarray, reference: np.ndarray) -> float:
+    def _compute_state_cost(self, state: np.ndarray, reference: np.ndarray) -> float:
         """ compute a single state cost via a quadartic state cost
 
         :param state: single state array
@@ -114,3 +114,11 @@ class QuadraticEvaluator(AbstractEvaluator):
         :return final_state_cost: final state cost
         """
         pass
+
+    def get_trajectories_cost(self):
+        return self.sample_costs
+
+    def get_trajectories_cumulative_cost(self):
+        return self.sample_total_costs
+
+

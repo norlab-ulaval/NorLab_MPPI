@@ -2,8 +2,9 @@
 
 from typing import Tuple, Union
 
+import numpy as np
 import pytest
-from src.barebones_mpc.nominal_path.abstract import (
+from src.barebones_mpc.nominal_path.abstract_NP import (
     AbstractNominalPath,
     MockNominalPath,
     )
@@ -27,7 +28,7 @@ class TestMockNominalPathBoostrap:
 
     def test_init(self, config_nominal_path):
         MockNominalPath(sample_length=config_nominal_path.sample_length,
-                        input_shape=config_nominal_path.discrete_input_space)
+                        input_dimension=config_nominal_path.discrete_input_space)
 
     def test_config_init(self, setup_mock_config_dict_CartPole):
         instance = MockNominalPath.config_init(config=setup_mock_config_dict_CartPole)
@@ -38,8 +39,9 @@ class TestMockNominalPathBoostrap:
             config_nominal_path.config['environment']['type'] = 'NOT_gym'
             MockNominalPath.config_init(config=config_nominal_path.config, )
 
-    def test_execute(self, setup_mock_config_dict_CartPole, config_nominal_path):
+    def test_bootstrap(self, setup_mock_config_dict_CartPole, config_nominal_path):
         instance = MockNominalPath.config_init(config=setup_mock_config_dict_CartPole)
-        nominal_input, nominal_path = instance.bootstrap(state_t0)
-        assert type(nominal_input) is int
-        assert nominal_path.size == config_nominal_path.sample_length
+        nominal_input = instance.bootstrap()
+        assert type(nominal_input) is np.ndarray
+        assert nominal_input.shape[0] == config_nominal_path.sample_length
+        # assert nominal_path.size == config_nominal_path.sample_length

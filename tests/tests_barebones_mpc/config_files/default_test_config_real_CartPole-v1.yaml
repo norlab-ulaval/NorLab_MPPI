@@ -3,11 +3,11 @@
 config_name: 'default CartPole-v1'
 config_short_description: "gym CartPole-v1 test configuragtion. Discrete"
 controler_component:
-  nominalPath: src.barebones_mpc.nominal_path.abstract.MockNominalPath
-  model: src.barebones_mpc.model.abstract_model.MockModel
-  sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
-  evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
-  selector: src.barebones_mpc.selector.abstract_selector.MockSelector
+  nominalPath: src.barebones_mpc.nominal_path.abstract_NP.MockNominalPath
+  model: src.barebones_mpc.model.inv_pendulum_model.InvPendulumModel
+  sampler: src.barebones_mpc.sampler.std_dev_sampler.StandardDevSampler
+  evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
+  selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
 force_headless_mode: true
 record: false
 environment:
@@ -21,6 +21,7 @@ environment:
     pole_angle: 0.418
     pole_angular_velocity: Inf
   input_space:
+    type: discrete
     dim: 1
     legal_actions: [0, 1]
 hparam:

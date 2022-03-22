@@ -107,14 +107,10 @@ def test_mpc_stddev_init(sampler_init_params, config_sampler):
         std_dev,
     ) = sampler_init_params
 
-    standard_dev_sampler = StandardDevSampler(
-        model=config_sampler.model,
-        number_samples=number_samples,
-        input_dimension=input_dimension,
-        sample_length=sample_length,
-        init_state=init_state,
-        std_dev=std_dev,
-    )
+    standard_dev_sampler = StandardDevSampler(model=config_sampler.model, number_samples=number_samples,
+                                              input_dimension=input_dimension, sample_length=sample_length,
+                                              init_state=init_state, input_type='continuous', input_space=None,
+                                              std_dev=std_dev)
     return None
 
 
@@ -135,9 +131,8 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
     ) = std_dev_inv_pendulum_model_init_params
 
     inv_pendulum_model = InvPendulumModel(time_step, number_samples, sample_length, cart_mass, pendulum_mass)
-    standard_dev_sampler = StandardDevSampler(
-        inv_pendulum_model, number_samples, input_dimension, sample_length, init_state, std_dev
-    )
+    standard_dev_sampler = StandardDevSampler(inv_pendulum_model, number_samples, input_dimension, sample_length,
+                                              init_state, 'continuous', None, std_dev)
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
     assert sample_input.shape == (sample_length + 1, number_samples, input_dimension)
@@ -168,9 +163,8 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
         cart_mass=cart_mass,
         pendulum_mass=pendulum_mass,
     )
-    standard_dev_sampler = StandardDevSampler(
-        inv_pendulum_model, number_samples, input_dimension, sample_length, init_state, std_dev
-    )
+    standard_dev_sampler = StandardDevSampler(inv_pendulum_model, number_samples, input_dimension, sample_length,
+                                              init_state, 'continuous', None, std_dev)
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
     sample_state = standard_dev_sampler.sample_states(sample_input, init_state)
@@ -233,9 +227,8 @@ def test_mpc_barebones_sample(std_dev_sample_straight_line_params):
         cart_mass=cart_mass,
         pendulum_mass=pendulum_mass,
         )
-    standard_dev_sampler = StandardDevSampler(
-        inv_pendulum_model, number_samples, input_dimension, sample_length, init_state, std_dev
-    )
+    standard_dev_sampler = StandardDevSampler(inv_pendulum_model, number_samples, input_dimension, sample_length,
+                                              init_state, 'continuous', None, std_dev)
 
     sample_input = standard_dev_sampler.sample_inputs(nominal_input)
     assert (sample_input[:, 0, :] == nominal_input).all()

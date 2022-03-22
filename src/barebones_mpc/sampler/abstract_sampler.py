@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any, Dict, List, Tuple, Type, Union
 
 import numpy as np
 from gym import wrappers as gym_wrappers
@@ -18,15 +18,17 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
         input_dimension: int,
         sample_length: int,
         init_state: np.ndarray,
-        *args,
-        **kwargs,
+        input_type: str,
+        input_space: Union[Tuple[int], np.ndarray],
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         self.number_samples = number_samples
         self.input_dimension = input_dimension
         self.sample_length = sample_length
         self.init_state = init_state
+        self.input_type = input_type
+        self.input_space = input_space
 
         assert isinstance(model, AbstractModel), f"{self.ERR_S()} {model} is not and instance of AbstractModel"
         self.model = model
@@ -45,6 +47,8 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
         try:
             input_dimension: int = config["environment"]["input_space"]["dim"]
             observation_dim: int = config["environment"]["observation_space"]["dim"]
+            input_type = config["environment"]["input_space"]["type"]
+            input_space = config["environment"]["input_space"]["legal_actions"]
         except KeyError as e:
             raise KeyError(
                 f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
@@ -59,6 +63,8 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
             "input_dimension": input_dimension,
             "init_state": np.zeros(observation_dim),
             "sample_length": int(horizon / time_step),
+            "input_type": input_type,
+            "input_space": input_space,
         }
 
         return values_from_callback
@@ -115,10 +121,12 @@ class MockSampler(AbstractSampler):
         input_dimension,
         sample_length,
         init_state,
+        input_type,
+        input_space,
         test_arbitrary_param: Tuple[int] = (1, 2, 3,),
     ):
 
-        super().__init__(model, number_samples, input_dimension, sample_length, init_state)
+        super().__init__(model, number_samples, input_dimension, sample_length, init_state, input_type, input_space)
 
         # for unit testing  of base class AbstractModelPredictiveControlComponent in
         #   test_abstract_model_predictive_control_component.py

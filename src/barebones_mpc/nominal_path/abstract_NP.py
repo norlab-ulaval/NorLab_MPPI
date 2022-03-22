@@ -12,11 +12,11 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
     config: dict
 
-    def __init__(self, sample_length, input_shape, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, sample_length, input_dimension):
+        super().__init__()
 
         self.sample_length = sample_length
-        self.input_shape = input_shape
+        self.input_dimension = input_dimension
 
     @classmethod
     def _subclass_config_key(cls) -> str:
@@ -42,7 +42,7 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
 
         values_from_callback = {
             "sample_length": int(horizon / time_step),
-            "input_shape": config["environment"]["input_space"]["dim"],
+            "input_dimension": config["environment"]["input_space"]["dim"],
         }
         return values_from_callback
 
@@ -50,12 +50,12 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def bootstrap(self, state_t0) -> Tuple[Any, Any]:
+    def bootstrap(self, state_t0) -> Any:
         """
         Bootstrap the initial nominal path
 
-        Return (initial_nominal_input, initial_nominal_path)
         :param state_t0:
+        :return initial_nominal_path
         """
         pass
 
@@ -63,8 +63,8 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
 class MockNominalPath(AbstractNominalPath):
     """ For testing purpose only"""
 
-    def __init__(self, sample_length, input_shape):
-        super().__init__(sample_length, input_shape)
+    def __init__(self, sample_length, input_dimension):
+        super().__init__(sample_length, input_dimension)
 
     def _config_post_init_callback(self, config: Dict) -> None:
         super()._config_post_init_callback(config)
@@ -76,7 +76,10 @@ class MockNominalPath(AbstractNominalPath):
         except AttributeError:
             pass
 
-    def bootstrap(self, state_t0) -> Tuple[Union[int, float, np.ndarray], np.ndarray]:
+    # def bootstrap(self, state_t0) -> Tuple[Union[int, float, np.ndarray], np.ndarray]:
+    def bootstrap(self, state_t0=None) -> np.ndarray:
         initial_nominal_input = self.env.action_space.sample()
-        initial_nominal_path = np.full(shape=(self.sample_length,), fill_value=initial_nominal_input)
-        return initial_nominal_input, initial_nominal_path
+        initial_nominal_inputs = np.full(
+            shape=(self.sample_length, self.input_dimension), fill_value=initial_nominal_input
+        )
+        return initial_nominal_inputs

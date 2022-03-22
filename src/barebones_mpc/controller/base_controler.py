@@ -1,6 +1,6 @@
 # coding=utf-8
 import os
-from typing import Any, Tuple, Type, TypeVar, Union
+from typing import Type
 
 import numpy as np
 import yaml
@@ -11,9 +11,10 @@ from src.barebones_mpc.model.abstract_model import AbstractModel
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 from src.barebones_mpc.evaluator.abstract_evaluator import AbstractEvaluator
 from src.barebones_mpc.selector.abstract_selector import AbstractSelector
-from src.barebones_mpc.nominal_path.abstract import AbstractNominalPath
+from src.barebones_mpc.nominal_path.abstract_NP import AbstractNominalPath
 
 from src.environment_adapter.adapters import make_environment_adapter, AbstractEnvironmentAdapter
+
 
 class ModelPredictiveControler(object):
     @classmethod
@@ -80,27 +81,36 @@ class ModelPredictiveControler(object):
 
             expected_obs_shape = self.environment.reset().shape
             assert expected_obs_shape == observation.shape, (
-                f"{self.ERR_S} `state_t0` list provided in config_file is has " f"the wrong shape "
+                f"{self.ERR_S} The `state_t0` list provided in config_file as the wrong shape "
             )
 
         observations.append(observation)
 
-        nominal_input, _ = self._init_nominal_input(state_t0)
+        nominal_inputs = self.nominal_path.bootstrap(state_t0)
         experimental_window = self.config["hparam"]["experimental_hparam"]["experimental_window"]
         for global_step in range(experimental_window):
 
             if self.config["force_headless_mode"]:
                 self.environment.render()
 
-            sample_input = self.sampler.sample_inputs(nominal_input=nominal_input)
-            sample_states = self.sampler.sample_states(sample_input=sample_input, init_state=observation)
-            sample_cost = self.evaluator.compute_sample_costs(sample_input=sample_input, sample_states=sample_states)
-            nominal_input, nominal_states = self.selector.select_next_input(sample_cost=sample_cost)
+            sample_inputs = self.sampler.sample_inputs(nominal_input=nominal_inputs)
+            sample_states = self.sampler.sample_states(sample_input=sample_inputs, init_state=observation)
 
-            next_observation, reward, done, info = self.environment.step(input=nominal_input)
+            self.evaluator.compute_sample_costs(sample_input=sample_inputs, sample_states=sample_states)
+            sample_costs = self.evaluator.get_trajectories_cumulative_cost()
+            nominal_inputs, nominal_states = self.selector.select_next_input(
+                sample_states=sample_states, sample_inputs=sample_inputs, sample_costs=sample_costs
+            )
+            first_input = nominal_inputs.ravel()[0]
 
-            actions.append(nominal_input)
-            rewards.append(reward)
+            assert self.environment.action_space.contains(
+                first_input
+            ), f"{self.ERR_S} The input {first_input} is not a legal input"
+
+            next_observation, cost, done, info = self.environment.step(input=first_input)
+
+            actions.append(first_input)
+            rewards.append(cost)
             observations.append(next_observation)
 
             if done:
@@ -114,6 +124,3 @@ class ModelPredictiveControler(object):
 
     def _setup_environment(self) -> Type[AbstractEnvironmentAdapter]:
         return make_environment_adapter(self.config)
-
-    def _init_nominal_input(self, state_t0) -> Tuple[Union[int, float, np.ndarray], np.ndarray]:
-        return self.nominal_path.bootstrap(state_t0)

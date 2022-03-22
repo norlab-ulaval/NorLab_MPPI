@@ -17,6 +17,8 @@ class ConfigSampler:
     number_samples: int = 1000
     input_dimension: int = 1
     sample_length: int = int(0.75 / (1 / 20))
+    input_type: str = "discrete"
+    input_space: Tuple[int] = (0, 1)
     model: Type[MockModel] = MockModel(1, 1, 1, 1)
 
 
@@ -33,6 +35,8 @@ class TestMockSampler:
             input_dimension=config_sampler.input_dimension,
             sample_length=config_sampler.sample_length,
             init_state=config_sampler.init_state,
+            input_type=config_sampler.input_type,
+            input_space=config_sampler.input_space,
         )
 
     def test_config_init(self, setup_mock_config_dict_CartPole, config_sampler):

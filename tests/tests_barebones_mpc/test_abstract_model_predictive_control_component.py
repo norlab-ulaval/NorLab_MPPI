@@ -53,13 +53,9 @@ class TestAbstractModelPredictiveControlComponent:
     """ Use MockSampler as a proxy for testing the AbstractModelPredictiveControlComponent class"""
 
     def test_init(self, config_ampcc):
-        instance = MockSampler(
-            model=config_ampcc.model,
-            number_samples=config_ampcc.number_samples,
-            input_dimension=config_ampcc.input_dimension,
-            sample_length=config_ampcc.sample_length,
-            init_state=config_ampcc.init_state,
-        )
+        instance = MockSampler(model=config_ampcc.model, number_samples=config_ampcc.number_samples,
+                               input_dimension=config_ampcc.input_dimension, sample_length=config_ampcc.sample_length,
+                               init_state=config_ampcc.init_state, input_type='discrete', input_space=(0, 1))
 
         assert instance.computed_test_arbitrary_param == 6
 

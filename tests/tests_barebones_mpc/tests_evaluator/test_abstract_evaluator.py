@@ -49,13 +49,13 @@ class TestMockEvaluator:
 
     def test_compute_input_cost(self, setup_mock_config_dict_CartPole, config_evaluator):
         instance = MockEvaluator.config_init(config=setup_mock_config_dict_CartPole)
-        instance.compute_input_cost(None)
+        instance._compute_input_cost(None)
 
     def test_compute_state_cost(self, setup_mock_config_dict_CartPole, config_evaluator):
         instance = MockEvaluator.config_init(config=setup_mock_config_dict_CartPole)
-        instance.compute_state_cost(None)
+        instance._compute_state_cost(None)
 
-    @pytest.mark.skip(reason="ToDo:implement >> mock return value")  
+    @pytest.mark.skip(reason="ToDo:implement >> mock return value")
     def test_compute_final_state_cost(self, setup_mock_config_dict_CartPole, config_evaluator):
         instance = MockEvaluator.config_init(config=setup_mock_config_dict_CartPole)
         instance.compute_final_state_cost(None)
