@@ -1,5 +1,6 @@
 # coding=utf-8
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
 from typing import TypeVar, Union, Any, Type, Tuple, List, Dict
 import os
 import gym
@@ -11,12 +12,6 @@ GYM_SPACE = TypeVar("GYM_SPACE", gym.spaces.box.Box, gym.spaces.discrete.Discret
 
 
 class AbstractEnvironmentAdapter(metaclass=ABCMeta):
-
-    # _rollout_idx: int
-    # _record: bool
-    # _headless: bool
-    # _virtual_display: Display
-
     def __init__(self, config_dict: Dict):
         self._config_dict = config_dict
         self._record: bool = self._config_dict["record"]
@@ -29,6 +24,14 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         self._env = self._make()
         self.observation_space = self._init_observation_space()
         self.action_space = self._init_action_space()
+
+    @classmethod
+    def NAMED_ERROR(cls) -> str:
+        return f"({cls.__qualname__} MSG): "
+
+    @classmethod
+    def NAMED_MSG(cls) -> str:
+        return f"({cls.__qualname__} MSG): "
 
     @abstractmethod
     def _make(self) -> Any:
@@ -77,7 +80,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def step(self, input) -> Tuple[Union[np.ndarray, Any], Union[int, float], bool, Dict]:
+    def step(self, action) -> Tuple[Union[np.ndarray, Any], Union[int, float], bool, Dict]:
         """
         Execute an action in the environment and observe the next state and the resulting reward.
 
@@ -100,7 +103,7 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
 
         ================================================================================================================
 
-        :param input: the input to perform in that state at the curent time step
+        :param action: the input to perform in that state at the curent time step
         :return: the resulting observation and reward consisting of a tupple (observation, reward, done, info)
         """
         pass
@@ -140,8 +143,6 @@ class AbstractEnvironmentAdapter(metaclass=ABCMeta):
 
 
 class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
-    _recorder: VideoRecorder
-
     def __init__(self, config_dict: Dict) -> None:
         """
         Adapter for gym environment. Specification are fetch from the configuration file
@@ -237,21 +238,31 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         :param config_dict:
         """
         super().__init__(config_dict=config_dict)
+        _recorder: VideoRecorder = None
 
     def _make(self,):
         config_name = self._config_dict["config_name"].replace(" ", "_")
         env = gym.make(self._config_dict["environment"]["name"])
         if self._record:
-            print("os.getcwd() >>>", os.getcwd())
 
-            video_recording_path = os.path.join("experiment", config_name, "video")
-            if not os.path.exists(video_recording_path):
-                os.makedirs(video_recording_path)
+            try:
+                print(f"{self.NAMED_MSG()}os.getcwd() >>>", os.getcwd())
 
-            recording_name = "{}_{}.mp4".format(config_name, self._rollout_idx)
-            recording_path = os.path.join(video_recording_path, recording_name)
+                video_recording_path = os.path.join("experiment", config_name, "video")
+                if not os.path.exists(video_recording_path):
+                    os.makedirs(video_recording_path)
 
-            self._recorder = VideoRecorder(env, recording_path)
+                timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                timestamp = timestamp.replace(" ", "-")
+                timestamp = timestamp.replace("/", "-")
+                timestamp = timestamp.replace(":", "")
+                recording_name = f"{config_name}_{self._rollout_idx}_{timestamp}.mp4"
+                recording_path = os.path.join(video_recording_path, recording_name)
+
+                self._recorder = VideoRecorder(env, recording_path)
+            except Exception as e:
+                # Note: The exception scope is large on purpose
+                raise Exception(f"{self.NAMED_ERROR()} {e}") from e
 
         return env
 
@@ -261,14 +272,17 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
     def _init_action_space(self) -> GYM_SPACE:
         return self._env.action_space
 
-    def step(self, input) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
-        return self._env.step(input)
+    def step(self, action) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
+        return self._env.step(action)
 
     def reset(self) -> Tuple[Union[np.ndarray, List[int]], Union[int, float], bool, Dict]:
         self._rollout_idx += 1
         return self._env.reset()
 
     def render(self, mode: str = "human") -> None:
+        if self._record:
+            print(f"({self.NAMED_MSG()}): Video recorded to `{self._recorder.path}`")
+
         if self._record and (self._config_dict["environment"]["rendering_interval"] > 0):
             self._recorder.capture_frame()
         elif not self._headless:
