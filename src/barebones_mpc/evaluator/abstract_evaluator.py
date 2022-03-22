@@ -20,16 +20,15 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         self.state_dimension = state_dimension
 
     @classmethod
-    def _subclass_config_key(cls) -> str:
+    def _specialized_config_key(cls) -> str:
         return "evaluator_hparam"
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
+    def _specialized_config_required_fields(cls) -> List[str]:
         return []
 
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
-    ) -> Dict:
+    def _config_pre__init__callback(self, config: Dict, specialized_config: Dict,
+                                    init__signature_values_from_config: Dict) -> Dict:
 
         try:
             input_dimension: int = config["environment"]["input_space"]["dim"]
@@ -39,7 +38,7 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
             time_step: int = config["hparam"]["sampler_hparam"]["steps_per_prediction"]
         except KeyError as e:
             raise KeyError(
-                f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
+                f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
                 f"`environment:input_space:dim`,`environment:observation_space:dim`, "
                 f"`hparam:sampler_hparam:number_samples`, `hparam:sampler_hparam:horizon` and "
@@ -55,24 +54,24 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
         }
         return values_from_callback
 
-    def _config_post_init_callback(self, config: Dict) -> None:
+    def _config_post__init__callback(self, config: Dict) -> None:
         pass
 
     @abstractmethod
     def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
         """ computes the cost related to every sample
 
-        :param sample_input: sample input array
+        :param sample_input: sample input_array array
         :param sample_states: sample state array
         :return None
         """
         pass
 
     @abstractmethod
-    def _compute_input_cost(self, input: np.ndarray) -> Union[float, np.ndarray]:
+    def _compute_input_cost(self, input_array: np.ndarray) -> Union[float, np.ndarray]:
         """ computes a single input cost
 
-        :param input: single input array
+        :param input_array: single input array
         :return input_cost: input cost
         """
         pass
@@ -110,7 +109,7 @@ class MockEvaluator(AbstractEvaluator):
     def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
         return None
 
-    def _compute_input_cost(self, input: np.ndarray) -> float:
+    def _compute_input_cost(self, input_array: np.ndarray) -> float:
         return np.random.random((1,))
 
     def _compute_state_cost(self, state: np.ndarray) -> float:

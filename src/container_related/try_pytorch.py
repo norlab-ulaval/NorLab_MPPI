@@ -29,8 +29,7 @@ def verify_pytorch_install() -> None:
     except Exception as e:
         # Note: The exception scope is large on purpose
         raise Exception(
-            f"DS | Something is wrong with PyTorch. It's probably the Dockerized-SNOW python interpreter\n"
-            f"{e}"
+            f"DS | Something is wrong with PyTorch. It's probably the Dockerized-SNOW python interpreter\n" f"{e}"
         ) from e
 
     return None
@@ -69,10 +68,7 @@ def verify_pytorch_cuda_install() -> None:
             print("\n> PyTorch can access CUDA\n")
         except Exception as e:
             # Note: The exception scope is large on purpose
-            raise Exception(
-                f"DS | Something is wrong with the PyTorch<->CUDA install.\n"
-                f"{e}"
-                ) from e
+            raise Exception(f"DS | Something is wrong with the PyTorch<->CUDA install.\n" f"{e}") from e
 
     else:
         print("> DS | Can't check PyTorch<->CUDA install.\n")

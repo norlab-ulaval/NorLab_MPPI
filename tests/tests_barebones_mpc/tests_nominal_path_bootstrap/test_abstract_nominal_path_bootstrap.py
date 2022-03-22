@@ -30,8 +30,8 @@ class TestMockNominalPathBoostrap:
         MockNominalPath(sample_length=config_nominal_path.sample_length,
                         input_dimension=config_nominal_path.discrete_input_space)
 
-    def test_config_init(self, setup_mock_config_dict_CartPole):
-        instance = MockNominalPath.config_init(config=setup_mock_config_dict_CartPole)
+    def test_config_init(self, config_nominal_path):
+        instance = MockNominalPath.config_init(config=config_nominal_path.config)
         assert isinstance(instance, AbstractNominalPath)
 
     def test_config_init_environment_FAIL(self, config_nominal_path):
@@ -39,8 +39,8 @@ class TestMockNominalPathBoostrap:
             config_nominal_path.config['environment']['type'] = 'NOT_gym'
             MockNominalPath.config_init(config=config_nominal_path.config, )
 
-    def test_bootstrap(self, setup_mock_config_dict_CartPole, config_nominal_path):
-        instance = MockNominalPath.config_init(config=setup_mock_config_dict_CartPole)
+    def test_bootstrap(self, config_nominal_path):
+        instance = MockNominalPath.config_init(config=config_nominal_path.config)
         nominal_input = instance.bootstrap()
         assert type(nominal_input) is np.ndarray
         assert nominal_input.shape[0] == config_nominal_path.sample_length

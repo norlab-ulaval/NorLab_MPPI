@@ -11,16 +11,13 @@ class TestMockSelector:
     def test_init(self, config_selector):
         instance = MockSelector()
 
-    def test_config_init(self, setup_mock_config_dict_CartPole, config_selector):
+    def test_config_init(self, setup_mock_config_dict_CartPole):
         instance = MockSelector.config_init(config=setup_mock_config_dict_CartPole)
         assert isinstance(instance, AbstractSelector)
 
-    def test_config_init(self, setup_mock_config_dict_CartPole, config_selector):
-        instance = MockSelector.config_init(config=setup_mock_config_dict_CartPole)
-        assert isinstance(instance, AbstractSelector)
 
-    def test_select_next_input(self, setup_mock_config_dict_CartPole, config_selector):
-        instance = MockSelector.config_init(config=setup_mock_config_dict_CartPole)
+    def test_select_next_input(self, config_selector):
+        instance = MockSelector.config_init(config=config_selector.config)
         config_selector.mock_trajectories()
 
         nominal_input, nominal_path = instance.select_next_input(

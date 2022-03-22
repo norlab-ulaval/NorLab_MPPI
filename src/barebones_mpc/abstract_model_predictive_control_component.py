@@ -5,25 +5,24 @@ from typing import Any, Dict, List
 
 
 class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self._config = None
 
     @classmethod
-    def ERR_S(cls) -> str:
+    def NAMED_ERR(cls) -> str:
         return f"({cls.__qualname__} ERROR): "
 
     @classmethod
     @abstractmethod
-    def _subclass_config_key(cls) -> str:
+    def _specialized_config_key(cls) -> str:
         """ The configuration file dictionary key pointing to the subclass component
 
         Exemple
 
         >>> class MyCoolMPCComponent:
         >>>     @classmethod
-        >>>     def _subclass_config_key(cls) -> str:
+        >>>     def _specialized_config_key(cls) -> str:
         >>>         return 'sampler_hparam'
 
         """
@@ -31,32 +30,33 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def _config_file_required_field(cls) -> List[str]:
+    def _specialized_config_required_fields(cls) -> List[str]:
         """ The list of paramenters from the subclass __init__ signature
 
         Exemple
 
         >>> class MyCoolMPCComponent:
         >>>    @classmethod
-        >>>    def _config_file_required_field(cls) -> List[str]:
+        >>>    def _specialized_config_required_fields(cls) -> List[str]:
         >>>        return ['number_samples', 'sample_length', 'input_dimension']
 
         """
         pass
 
     @abstractmethod
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
+    def _config_pre__init__callback(
+        self, config: Dict, specialized_config: Dict, init__signature_values_from_config: Dict
     ) -> Dict:
-        """ Add any custom code that you want executed with the config value just before object instanciation.
+        """ Configuration file computation executed PRIOR to instanciation.
+        Add any custom code that you want executed with the config value just before object instanciation.
 
         Exemple
 
         >>> class MyCoolMPCComponent:
-        >>>     def _config_pre_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config:
+        >>>     def _config_pre__init__callback(self, config: Dict, subclass_config: Dict, signature_values_from_config:
         Dict) -> Dict:
-        >>>     horizon: int = subclass_config['horizon']
-        >>>     time_step: int = subclass_config['steps_per_prediction']
+        >>>     horizon: int = specialized_config['horizon']
+        >>>     time_step: int = specialized_config['steps_per_prediction']
         >>>
         >>>     values_from_callback = {
         >>>         'sample_length':   int(horizon/time_step),
@@ -67,19 +67,21 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         >>>     return values_from_callback
 
         :param config: the complete configuration dictionary
-        :param subclass_config: the configuration dictionary with only the key:value of the subclass
-        :param signature_values_from_config: the key:value computed from the callback
+        :param specialized_config: the configuration dictionary with only the key:value of the subclass
+        :param init__signature_values_from_config: the key:value computed from the callback
         """
         pass
 
     @abstractmethod
-    def _config_post_init_callback(self, config: Dict) -> None:
-        """ Add any custom code that you want executed with the config value just after object instanciation.
+    def _config_post__init__callback(self, config: Dict) -> None:
+        """ Configuration file computation executed AFTER instanciation.
+        Add any custom code that you want executed with the config value just after object instanciation.
 
         Exemple
 
         >>> class MyCoolMPCComponent:
-        >>>     def _config_post_init_callback(self, config: Dict, subclass_config: Dict, signature_values_from_config:
+        >>>     def _config_post__init__callback(self, config: Dict, subclass_config: Dict,
+        signature_values_from_config:
         Dict) -> None:
         >>>     try:
         >>>         if self._config['environment']['type'] == 'gym':
@@ -98,73 +100,78 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
     @classmethod
     def config_init(cls, config: Dict, *args, **kwargs):
         """
-        Alternative initialization method via configuration dictionary
-        Return an instance of AbstractNominalPath
+        Alternative initialization method via configuration dictionary.
+        Return a subclass instance of AbstractModelPredictiveControlComponent.
 
         :param config: a dictionary of configuration
         :param args: pass arbitrary argument to the baseclass init method
         :param kwargs: pass arbitrary keyword argument to the baseclass init method
         """
-        subclass_config: Dict = config["hparam"][cls._subclass_config_key()]
-        if (subclass_config is None) or (subclass_config == "None"):
-            subclass_config = {}
 
         # ... Fetch subclass __init__ signature and corresponding value ................................................
-        subclasse_init_param_list = list(cls.__init__.__code__.co_varnames)
-        subclasse_init_param_list.remove("self")
+        init__signature = list(cls.__init__.__code__.co_varnames)
+        init__signature.remove("self")
 
         try:
-            subclasse_init_param_list.remove("args")
+            init__signature.remove("args")
         except ValueError as e:
             # No param `args` in the __init__ signature
             pass
         try:
-            subclasse_init_param_list.remove("kwargs")
+            init__signature.remove("kwargs")
         except ValueError as e:
             # No param `kwargs` in the __init__ signature
             pass
 
-        # ... Check for required base class parameter missing from the config ..........................................
-        if len(cls._config_file_required_field()) > 0:
-            assert set(cls._config_file_required_field()).issubset(set(subclass_config.keys())), (
-                f"{cls.ERR_S()} There's required baseclass parameters missing in the config file >> Hint: execute `"
-                f"{cls.__qualname__}._config_file_required_field()`"
+        # ... Check for required specialized parameter missing from the config .........................................
+        specialized_config: Dict = config["hparam"][cls._specialized_config_key()]
+        if (specialized_config is None) or (specialized_config == "None"):
+            specialized_config = {}
+
+        if len(cls._specialized_config_required_fields()) > 0:
+            assert set(cls._specialized_config_required_fields()).issubset(set(specialized_config.keys())), (
+                f"{cls.NAMED_ERR()} There's required init parameters missing in the config file >> Hint: execute `"
+                f"{cls.__qualname__}._specialized_config_required_fields()`"
             )
 
+        # ... Fetch specialized config value ...........................................................................
         try:
-            signature_values_from_config = {
-                param: value for param, value in subclass_config.items() if param in subclasse_init_param_list
+            init__signature_values_from_config = {
+                param: value for param, value in specialized_config.items() if param in init__signature
             }
         except AttributeError as e:
             raise e
-            signature_values_from_config = {}
+            init__signature_values_from_config = {}
 
-        signature_values_from_callback = cls._config_pre_init_callback(
+        # ... Execute pre __init__ callback ............................................................................
+        init__signature_values_from_pre_callback = cls._config_pre__init__callback(
             cls,
             config=config,
-            subclass_config=subclass_config,
-            signature_values_from_config=signature_values_from_config,
+            specialized_config=specialized_config,
+            init__signature_values_from_config=init__signature_values_from_config,
         )
 
-        kwargs.update(signature_values_from_config)
+        kwargs.update(init__signature_values_from_config)
         try:
-            kwargs.update(signature_values_from_callback)
+            kwargs.update(init__signature_values_from_pre_callback)
         except TypeError as e:
             raise TypeError(
-                f"{cls.ERR_S()} Something is wrong with the `{cls.__qualname__}._config_pre_init_callback()` return "
+                f"{cls.NAMED_ERR()} Something is wrong with the `{cls.__qualname__}._config_pre__init__callback()` "
+                f"return "
                 f"value. Be sure to return a dict\n"
                 f"{e}"
             ) from e
 
         # ... unaccounted parameter check ..............................................................................
-        unaccounted_param = [each for each in subclasse_init_param_list if each not in kwargs]
+        unaccounted_param = [each for each in init__signature if each not in kwargs]
         assert len(unaccounted_param) == 0, (
-            f"{cls.ERR_S()} There's __init__ signature parameters unacounted by the config_init method >> "
+            f"{cls.NAMED_ERR()} There's __init__ signature parameters unacounted by the config_init method >> "
             f"{unaccounted_param}"
         )
 
+        # ... Instanciate MPC controler component ......................................................................
         instance = cls(*args, **kwargs)
         instance._config = config
-        instance._config_post_init_callback(config=config)
+        instance._config_post__init__callback(config=config)
 
         return instance

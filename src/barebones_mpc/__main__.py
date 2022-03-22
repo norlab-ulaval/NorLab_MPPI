@@ -13,16 +13,19 @@ import yaml
 
 
 # todo:description redaction >> next bloc ↓↓
-parser = argparse.ArgumentParser(description=(
-    "=============================================================================\n"
-    ":: Command line option for the NorLab-MPPI barebones_mpc package.\n\n"
-    "   blablabla\n"
-    "   You can execute the package by using the argument: --blabla "),
-    epilog="=============================================================================\n")
+parser = argparse.ArgumentParser(
+    description=(
+        "=============================================================================\n"
+        ":: Command line option for the NorLab-MPPI barebones_mpc package.\n\n"
+        "   blablabla\n"
+        "   You can execute the package by using the argument: --blabla "
+    ),
+    epilog="=============================================================================\n",
+)
 
-parser.add_argument('--config', type=str, default='')
-parser.add_argument('--execute', action='store_true', help='Execute barebones MPC')
-parser.add_argument('--testSpec', action='store_true', help='Flag for automated continuous integration test')
+parser.add_argument("--config", type=str, default="")
+parser.add_argument("--execute", action="store_true", help="Execute barebones MPC")
+parser.add_argument("--testSpec", action="store_true", help="Flag for automated continuous integration test")
 
 # # ››› Parser references ›››...........................................................................................
 # parser.add_argument('--intDefaultExample', type=int, default=20, help='')

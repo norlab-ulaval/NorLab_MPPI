@@ -3,7 +3,6 @@
 import pytest
 from src.utils.tdd_related import is_run_on_a_teamcity_continuous_integration_server
 
-
 pytestmark = pytest.mark.automated_test
 
 is_run_on_TeamCity_CI_server = is_run_on_a_teamcity_continuous_integration_server()
@@ -30,10 +29,3 @@ def test_command_line_invocation_script_execute_barebones_mpc_PASS():
 
     # Note: exit(0) <==> clean exit without any errors/problems
     assert 0 == out, command_line_test_error_msg(out)
-
-# def test_manualy_triggered_FAIL():
-#     assert False
-
-#
-# def test_manualy_triggered_PASS():
-#     assert True

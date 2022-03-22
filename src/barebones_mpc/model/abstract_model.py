@@ -17,16 +17,15 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
         self.state_dimension = state_dimension
 
     @classmethod
-    def _subclass_config_key(cls) -> str:
+    def _specialized_config_key(cls) -> str:
         return "model_hparam"
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
+    def _specialized_config_required_fields(cls) -> List[str]:
         return []
 
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
-    ) -> Dict:
+    def _config_pre__init__callback(self, config: Dict, specialized_config: Dict,
+                                    init__signature_values_from_config: Dict) -> Dict:
 
         try:
             observation_dim: int = config["environment"]["observation_space"]["dim"]
@@ -35,7 +34,7 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
             time_step: int = config["hparam"]["sampler_hparam"]["steps_per_prediction"]
         except KeyError as e:
             raise KeyError(
-                f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
+                f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
                 f"`environment:observation_space:dim`, `hparam:sampler_hparam:horizon` and "
                 f"`hparam:sampler_hparam:steps_per_prediction`\n"
@@ -51,7 +50,7 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
 
         return values_from_callback
 
-    def _config_post_init_callback(self, config: Dict) -> None:
+    def _config_post__init__callback(self, config: Dict) -> None:
         pass
 
     @abstractmethod

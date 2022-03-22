@@ -18,7 +18,6 @@ class ConfigAMPCC:
     number_samples: int = 1000
     input_dimension: int = 1
     sample_length: int = int(0.75 / (1 / 20))
-    # model: Type[MockModel] = MockModel()
     model: MockModel = MockModel(1, 1, 1, 1)
 
 
@@ -38,11 +37,11 @@ def config_ampcc_multi(setup_mock_config_dict_CartPole):
 
 
 class BadMockSampler(MockSampler):
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
+    def _config_pre__init__callback(
+        self, config: Dict, specialized_config: Dict, init__signature_values_from_config: Dict
     ) -> Dict:
-        original_callback_dict = super()._config_pre_init_callback(
-            self, config, subclass_config, signature_values_from_config
+        original_callback_dict = super()._config_pre__init__callback(
+            self, config, specialized_config, init__signature_values_from_config
         )
 
         del original_callback_dict["sample_length"]
@@ -53,28 +52,34 @@ class TestAbstractModelPredictiveControlComponent:
     """ Use MockSampler as a proxy for testing the AbstractModelPredictiveControlComponent class"""
 
     def test_init(self, config_ampcc):
-        instance = MockSampler(model=config_ampcc.model, number_samples=config_ampcc.number_samples,
-                               input_dimension=config_ampcc.input_dimension, sample_length=config_ampcc.sample_length,
-                               init_state=config_ampcc.init_state, input_type='discrete', input_space=(0, 1))
+        instance = MockSampler(
+            model=config_ampcc.model,
+            number_samples=config_ampcc.number_samples,
+            input_dimension=config_ampcc.input_dimension,
+            sample_length=config_ampcc.sample_length,
+            init_state=config_ampcc.init_state,
+            input_type="discrete",
+            input_space=(0, 1),
+        )
 
         assert instance.computed_test_arbitrary_param == 6
 
-    def test_ERR_S_msg(self, setup_mock_config_dict_CartPole, config_ampcc):
-        print("\n>>> On a class: ", MockSampler.ERR_S())
-        print("\n>>> On a class: ", AbstractSampler.ERR_S())
+    def test_ERR_S_msg(self, config_ampcc):
+        print("\n>>> On a class: ", MockSampler.NAMED_ERR())
+        print("\n>>> On a class: ", AbstractSampler.NAMED_ERR())
 
-        instance = MockSampler.config_init(config=setup_mock_config_dict_CartPole, model=config_ampcc.model)
+        instance = MockSampler.config_init(config=config_ampcc.config, model=config_ampcc.model)
 
-        print("\n>>> On an instance: ", instance.ERR_S())
+        print("\n>>> On an instance: ", instance.NAMED_ERR())
 
-    def test_config_init(self, setup_mock_config_dict_CartPole, config_ampcc):
-        instance = MockSampler.config_init(config=setup_mock_config_dict_CartPole, model=config_ampcc.model)
+    def test_config_init(self, config_ampcc):
+        instance = MockSampler.config_init(config=config_ampcc.config, model=config_ampcc.model)
         assert isinstance(instance, AbstractSampler)
         assert instance.computed_test_arbitrary_param == 9
 
-    def test_config_init_unaccounted_parameter_check(self, setup_mock_config_dict_CartPole, config_ampcc):
+    def test_config_init_unaccounted_parameter_check(self, config_ampcc):
         with pytest.raises(AssertionError):
-            _ = BadMockSampler.config_init(config=setup_mock_config_dict_CartPole, model=config_ampcc.model)
+            _ = BadMockSampler.config_init(config=config_ampcc.config, model=config_ampcc.model)
 
     @pytest.mark.skip(reason="There is no class variable anymore")
     def test_class_variable(self, config_ampcc_multi):

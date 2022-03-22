@@ -66,9 +66,17 @@ class ArbitrarySizeManualSelector:
 
 
 @pytest.fixture(scope="function")
-def arbitrary_size_manual_selector_10_5_1_2(setup_mock_config_dict_CartPole):
+def arbitrary_size_manual_selector_10_5_1_2():
     return ArbitrarySizeManualSelector(sample_length=10, number_samples=5, input_dimension=1, state_dimension=2)
 
 @pytest.fixture(scope="function")
-def arbitrary_size_manual_selector_100_10_2_2(setup_mock_config_dict_CartPole):
+def arbitrary_size_manual_selector_100_10_2_2():
     return ArbitrarySizeManualSelector(sample_length=100, number_samples=2, input_dimension=2, state_dimension=2)
+
+
+@pytest.fixture
+def greedy_selector_init_params(arbitrary_size_manual_selector_100_10_2_2):
+    number_samples = arbitrary_size_manual_selector_100_10_2_2.number_samples
+    sample_total_cost = np.arange(0, number_samples).reshape(1, number_samples)
+
+    return arbitrary_size_manual_selector_100_10_2_2, sample_total_cost

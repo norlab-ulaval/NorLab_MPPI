@@ -47,8 +47,8 @@ class InvPendulumModel(AbstractModel):
         self.sample_states = np.empty((self.sample_length + 1, self.number_samples, self.state_dimension))
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
-        required_field: List[str] = super()._config_file_required_field()
+    def _specialized_config_required_fields(cls) -> List[str]:
+        required_field: List[str] = super()._specialized_config_required_fields()
         required_field.extend(["cart_mass", "pendulum_mass"])
         return required_field
 

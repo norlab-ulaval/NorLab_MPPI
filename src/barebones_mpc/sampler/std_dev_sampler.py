@@ -30,8 +30,8 @@ class StandardDevSampler(AbstractSampler):
         self.sample_input = np.empty((self.sample_length, self.number_samples + 1, self.input_dimension))
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
-        required_field: List[str] = super()._config_file_required_field()
+    def _specialized_config_required_fields(cls) -> List[str]:
+        required_field: List[str] = super()._specialized_config_required_fields()
         required_field.extend(["std_dev"])
         return required_field
 

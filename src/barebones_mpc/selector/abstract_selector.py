@@ -14,19 +14,18 @@ class AbstractSelector(ABC, AbstractModelPredictiveControlComponent):
         super().__init__()
 
     @classmethod
-    def _subclass_config_key(cls) -> str:
+    def _specialized_config_key(cls) -> str:
         return "selector_hparam"
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
+    def _specialized_config_required_fields(cls) -> List[str]:
         return []
 
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
-    ) -> Dict:
+    def _config_pre__init__callback(self, config: Dict, specialized_config: Dict,
+                                    init__signature_values_from_config: Dict) -> Dict:
         return {}
 
-    def _config_post_init_callback(self, config: Dict) -> None:
+    def _config_post__init__callback(self, config: Dict) -> None:
         pass
 
     @abstractmethod
@@ -49,8 +48,8 @@ class MockSelector(AbstractSelector):
     def __init__(self):
         super().__init__()
 
-    def _config_post_init_callback(self, config: Dict) -> None:
-        super()._config_post_init_callback(config)
+    def _config_post__init__callback(self, config: Dict) -> None:
+        super()._config_post__init__callback(config)
         try:
             if self._config["environment"]["type"] == "gym":
                 self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config["environment"]["name"])
@@ -61,6 +60,6 @@ class MockSelector(AbstractSelector):
 
     def select_next_input(self, sample_states, sample_inputs, sample_costs) -> Tuple[Union[int, float], np.ndarray]:
 
-        mock_optimal_trajectory = randint(a=0, b=sample_states.shape[1])
+        mock_optimal_trajectory = randint(a=0, b=sample_states.shape[1]-1)
 
         return sample_inputs[:, mock_optimal_trajectory, :], sample_states[:, mock_optimal_trajectory, :]

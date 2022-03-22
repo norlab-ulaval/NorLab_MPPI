@@ -11,21 +11,17 @@ class QuadraticEvaluator(AbstractEvaluator):
         input_dimension: int,
         sample_length: int,
         state_dimension: int,
-        std_dev: Union[float,np.ndarray],
+        std_dev: Union[float, np.ndarray],
         beta: int,
         inverse_temperature: float,
         state_weights: Union[np.ndarray, float],
         reference_state: np.ndarray = None,
-        *args,
-        **kwargs
     ):
         super().__init__(
             number_samples=number_samples,
             input_dimension=input_dimension,
             sample_length=sample_length,
             state_dimension=state_dimension,
-            *args,
-            **kwargs
         )
 
         self.std_dev = std_dev  # TODO : Define std_Dev for multiple dimensions of input
@@ -51,25 +47,27 @@ class QuadraticEvaluator(AbstractEvaluator):
         self.reference_state = reference_state
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
-        required_field: List[str] = super()._config_file_required_field()
+    def _specialized_config_required_fields(cls) -> List[str]:
+        required_field: List[str] = super()._specialized_config_required_fields()
         required_field.extend(["std_dev", "beta", "inverse_temperature"])
         return required_field
 
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
+    def _config_pre__init__callback(
+        self, config: Dict, specialized_config: Dict, init__signature_values_from_config: Dict
     ) -> Dict:
-        values_from_callback: dict = super()._config_pre_init_callback(
+        values_from_callback: dict = super()._config_pre__init__callback(
             self,
             config=config,
-            subclass_config=subclass_config,
-            signature_values_from_config=signature_values_from_config,
+            specialized_config=specialized_config,
+            init__signature_values_from_config=init__signature_values_from_config,
         )
 
-        values_from_callback.update({
-            # "state_weights": subclass_config["state_weights"], # ToDo:investigate??
-            "reference_state": np.zeros(shape=(values_from_callback["state_dimension"]))
-            })
+        values_from_callback.update(
+            {
+                # "state_weights": subclass_config["state_weights"], # ToDo:investigate??
+                "reference_state": np.zeros(shape=(values_from_callback["state_dimension"]))
+            }
+        )
         return values_from_callback
 
     def compute_sample_costs(self, sample_input: np.ndarray, sample_states: np.ndarray) -> None:
@@ -88,14 +86,15 @@ class QuadraticEvaluator(AbstractEvaluator):
 
         return None
 
-    def _compute_input_cost(self, input: np.ndarray) -> float:
+    def _compute_input_cost(self, input_array: np.ndarray) -> float:
         """ computes a single input cost via a quadratic input cost
 
-        :param input: single input array
+        :param input_array: single input array
         :return input_cost: input cost
         """
-        cost_array = self.half_inverse_temperature*(
-                    input.transpose()@self.input_covariance_inverse@input + self.beta.transpose()@input)
+        cost_array = self.half_inverse_temperature * (
+                input_array.transpose()@self.input_covariance_inverse@input_array + self.beta.transpose()@input_array
+        )
         return cost_array[0]
 
     def _compute_state_cost(self, state: np.ndarray, reference: np.ndarray) -> float:
@@ -120,5 +119,3 @@ class QuadraticEvaluator(AbstractEvaluator):
 
     def get_trajectories_cumulative_cost(self):
         return self.sample_total_costs
-
-

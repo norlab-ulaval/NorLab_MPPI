@@ -30,20 +30,19 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
         self.input_type = input_type
         self.input_space = input_space
 
-        assert isinstance(model, AbstractModel), f"{self.ERR_S()} {model} is not and instance of AbstractModel"
+        assert isinstance(model, AbstractModel), f"{self.NAMED_ERR()} {model} is not and instance of AbstractModel"
         self.model = model
 
     @classmethod
-    def _subclass_config_key(cls) -> str:
+    def _specialized_config_key(cls) -> str:
         return "sampler_hparam"
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
+    def _specialized_config_required_fields(cls) -> List[str]:
         return ["number_samples", "horizon", "steps_per_prediction"]
 
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
-    ) -> Dict:
+    def _config_pre__init__callback(self, config: Dict, specialized_config: Dict,
+                                    init__signature_values_from_config: Dict) -> Dict:
         try:
             input_dimension: int = config["environment"]["input_space"]["dim"]
             observation_dim: int = config["environment"]["observation_space"]["dim"]
@@ -51,14 +50,14 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
             input_space = config["environment"]["input_space"]["legal_actions"]
         except KeyError as e:
             raise KeyError(
-                f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
+                f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
                 f"`environment:input_space:dim`,`environment:observation_space:dim`\n"
                 f"{e}"
             ) from e
 
-        horizon: int = subclass_config["horizon"]
-        time_step: int = subclass_config["steps_per_prediction"]
+        horizon: int = specialized_config["horizon"]
+        time_step: int = specialized_config["steps_per_prediction"]
         values_from_callback = {
             "input_dimension": input_dimension,
             "init_state": np.zeros(observation_dim),
@@ -69,7 +68,7 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
         return values_from_callback
 
-    def _config_post_init_callback(self, config: Dict) -> None:
+    def _config_post__init__callback(self, config: Dict) -> None:
         pass
 
     @classmethod
@@ -84,7 +83,6 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
         :param args: pass arbitrary argument to the baseclass init method
         :param kwargs: pass arbitrary keyword argument to the baseclass init method
         """
-        # kwargs.update({'model': import_controler_component_class(config, 'model')()})
         model_class = import_controler_component_class(config, "model")
         kwargs.update({"model": model_class.config_init(config=config)})
         return super().config_init(config, *args, **kwargs)
@@ -133,12 +131,12 @@ class MockSampler(AbstractSampler):
         self.computed_test_arbitrary_param = (np.array(list(test_arbitrary_param))).sum()
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
-        required_field: List[str] = super()._config_file_required_field()
+    def _specialized_config_required_fields(cls) -> List[str]:
+        required_field: List[str] = super()._specialized_config_required_fields()
         required_field.extend(["test_arbitrary_param"])
         return required_field
 
-    def _config_post_init_callback(self, config: Dict) -> None:
+    def _config_post__init__callback(self, config: Dict) -> None:
         try:
             if self._config["environment"]["type"] == "gym":
                 self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config["environment"]["name"])

@@ -10,8 +10,6 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 
 
 class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
-    config: dict
-
     def __init__(self, sample_length, input_dimension):
         super().__init__()
 
@@ -19,22 +17,22 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
         self.input_dimension = input_dimension
 
     @classmethod
-    def _subclass_config_key(cls) -> str:
+    def _specialized_config_key(cls) -> str:
         return "nominal_path_bootstrap"
 
     @classmethod
-    def _config_file_required_field(cls) -> List[str]:
+    def _specialized_config_required_fields(cls) -> List[str]:
         return []
 
-    def _config_pre_init_callback(
-        self, config: Dict, subclass_config: Dict, signature_values_from_config: Dict
+    def _config_pre__init__callback(
+        self, config: Dict, specialized_config: Dict, init__signature_values_from_config: Dict
     ) -> Dict:
         try:
             horizon = config["hparam"]["sampler_hparam"]["horizon"]
             time_step = config["hparam"]["sampler_hparam"]["steps_per_prediction"]
         except KeyError as e:
             raise KeyError(
-                f"{self.ERR_S()} There's required baseclass parameters missing in the config file. Make sure that "
+                f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
                 f"`hparam:sampler_hparam:horizon` and `hparam:sampler_hparam:steps_per_prediction`\n"
                 f"{e}"
@@ -46,13 +44,12 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
         }
         return values_from_callback
 
-    def _config_post_init_callback(self, config: Dict) -> None:
+    def _config_post__init__callback(self, config: Dict) -> None:
         pass
 
     @abstractmethod
-    def bootstrap(self, state_t0) -> Any:
-        """
-        Bootstrap the initial nominal path
+    def bootstrap(self, state_t0=None) -> Any:
+        """ Bootstrap the initial nominal path
 
         :param state_t0:
         :return initial_nominal_path
@@ -66,8 +63,8 @@ class MockNominalPath(AbstractNominalPath):
     def __init__(self, sample_length, input_dimension):
         super().__init__(sample_length, input_dimension)
 
-    def _config_post_init_callback(self, config: Dict) -> None:
-        super()._config_post_init_callback(config)
+    def _config_post__init__callback(self, config: Dict) -> None:
+        super()._config_post__init__callback(config)
         try:
             if self._config["environment"]["type"] == "gym":
                 self.env: gym_wrappers.time_limit.TimeLimit = gym_make(self._config["environment"]["name"])
