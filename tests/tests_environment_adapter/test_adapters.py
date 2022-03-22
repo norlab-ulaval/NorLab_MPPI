@@ -128,7 +128,8 @@ class TestGymEnvironmentAdapter:
 
     def test_render_and_record(self, gym_env_adapter_fixture_record_true):
         assert gym_env_adapter_fixture_record_true._record is True
-        video_dir = os.path.join("experiment", "default", "video")
+        env_name = gym_env_adapter_fixture_record_true._config_dict['environment']['name']
+        video_dir = os.path.join("experiment", f"default_{env_name}", "video")
         assert os.path.isdir(video_dir), "_make() did not create the video recording directory"
 
         gym_env_adapter_fixture_record_true.reset()
