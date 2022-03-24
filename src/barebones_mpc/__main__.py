@@ -3,8 +3,8 @@
 import argparse
 import yaml
 
-""" 
-"""
+from src.barebones_mpc.controller.base_controler import ModelPredictiveControler
+
 
 # todo:implement hparam
 # todo:implement test case hparam
@@ -37,16 +37,20 @@ parser.add_argument("--testSpec", action="store_true", help="Flag for automated 
 
 args = parser.parse_args()
 
-# exp_spec = ExperimentSpec()
-#
 if args.execute:
     # Configure experiment hyper-parameter
-    if args.testSpec:
-        pass
+    if args.config != "":
+        path_to_config = args.config
     else:
-        pass
+        path_to_config = "experiment/config_files/default_config_real_CartPole-v1.yaml"
+
+    if args.testSpec:
+        path_to_config = "tests/tests_barebones_mpc/config_files/default_test_config_mock_CartPole-v1.yaml"
+
+    mpc = ModelPredictiveControler(config_path=path_to_config)
+    mpc.execute()
 else:
-    pass
+    raise NotImplementedError("ToDo")  # todo
 
 exit(0)
 

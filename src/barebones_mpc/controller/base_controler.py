@@ -199,3 +199,4 @@ class ModelPredictiveControler(object):
 
     def _setup_environment(self) -> Type[AbstractEnvironmentAdapter]:
         return make_environment_adapter(self.config)
+

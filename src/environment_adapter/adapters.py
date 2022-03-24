@@ -260,6 +260,9 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
                 recording_path = os.path.join(video_recording_path, recording_name)
 
                 self._recorder = VideoRecorder(env, recording_path)
+
+                print(f"{self.NAMED_MSG()} Video recorded to `{self._recorder.path}`")
+
             except Exception as e:
                 # Note: The exception scope is large on purpose
                 raise Exception(f"{self.NAMED_ERROR()} {e}") from e
@@ -280,8 +283,6 @@ class GymEnvironmentAdapter(AbstractEnvironmentAdapter):
         return self._env.reset()
 
     def render(self, mode: str = "human") -> None:
-        if self._record:
-            print(f"({self.NAMED_MSG()}): Video recorded to `{self._recorder.path}`")
 
         if self._record and (self._config_dict["environment"]["rendering_interval"] > 0):
             self._recorder.capture_frame()
