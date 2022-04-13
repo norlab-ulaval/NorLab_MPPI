@@ -6,7 +6,7 @@ from src.barebones_mpc.model.abstract_model import AbstractModel, MockModel
 class TestMockModel:
     def test_init(self, config_model):
         instance = MockModel(
-            time_step=config_model.time_step,
+            prediction_step=config_model.prediction_step,
             number_samples=config_model.number_samples,
             sample_length=config_model.sample_length,
             state_dimension=config_model.state_dimension,

@@ -11,9 +11,9 @@ class ConfigEvaluator:
     config: Union[dict, None]
     number_samples: int = 3
     input_dimension: int = 1  # input array dimension
-    time_step: float = 1 / 20  # 20 hz or 0.2 seconds
-    horizon: int = time_step * 3  # s
-    sample_length = int(horizon / time_step)
+    prediction_step: float = 1 / 20  # 20 hz or 0.2 seconds
+    horizon: int = prediction_step * 3  # s
+    sample_length = int(horizon / prediction_step)
     state_dimension: int = 4  # state array dimension
     state_weights: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0])
     std_dev: np.ndarray = np.array([0.1])

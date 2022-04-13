@@ -18,9 +18,9 @@ def test_config_init(setup_mock_config_dict_CartPole):
 
 @pytest.fixture
 def quadratic_evaluator_init_params():
-    time_step = 1 / 20  # 20 hz or 0.2 seconds
+    prediction_step = 1 / 20  # 20 hz or 0.2 seconds
     horizon = 0.75  # s
-    sample_length = int(horizon / time_step)
+    sample_length = int(horizon / prediction_step)
     number_samples = 1000
     input_dimension = 1  # input array dimension
     state_dimension = 4  # state array dimension

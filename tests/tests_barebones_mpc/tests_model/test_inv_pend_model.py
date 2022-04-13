@@ -20,9 +20,9 @@ def test_config_init(setup_mock_config_dict_CartPole):
 # ... implementation ...................................................................................................
 @pytest.fixture
 def model_init_params():
-    time_step = 1 / 20  # 20 hz or 0.2 seconds
+    prediction_step = 1 / 20  # 20 hz or 0.2 seconds
     horizon = 0.75  # s
-    sample_length = int(horizon / time_step)
+    sample_length = int(horizon / prediction_step)
     commanded_lon_vel = 1.5  # m/s
     number_samples = 1000
     input_dimension = 1  # input array dimension
@@ -33,7 +33,7 @@ def model_init_params():
     sample_input = np.random.normal(loc=0, scale=1, size=(sample_length, number_samples, input_dimension))
 
     return (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -49,7 +49,7 @@ def model_init_params():
 
 def test_mpc_inv_pend_model_init(model_init_params):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -62,9 +62,9 @@ def test_mpc_inv_pend_model_init(model_init_params):
         sample_input,
     ) = model_init_params
 
-    # inv_pendulum_model = InvPendulumModel(time_step, number_samples, sample_length, cart_mass, pendulum_mass)
+    # inv_pendulum_model = InvPendulumModel(prediction_step, number_samples, sample_length, cart_mass, pendulum_mass)
     inv_pendulum_model = InvPendulumModel(
-        time_step=time_step,
+        prediction_step=prediction_step,
         number_samples=number_samples,
         sample_length=sample_length,
         state_dimension=state_dimension,
@@ -77,7 +77,7 @@ def test_mpc_inv_pend_model_init(model_init_params):
 # @pytest.mark.skip(reason="TODO: dev in progress")
 def test_mpc_inv_pend_model_predict(model_init_params):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -90,9 +90,9 @@ def test_mpc_inv_pend_model_predict(model_init_params):
         sample_input,
     ) = model_init_params
 
-    # inv_pendulum_model = InvPendulumModel(time_step, number_samples, sample_length, cart_mass, pendulum_mass)
+    # inv_pendulum_model = InvPendulumModel(prediction_step, number_samples, sample_length, cart_mass, pendulum_mass)
     inv_pendulum_model = InvPendulumModel(
-        time_step=time_step,
+        prediction_step=prediction_step,
         number_samples=number_samples,
         sample_length=sample_length,
         state_dimension=state_dimension,
@@ -107,10 +107,10 @@ def test_mpc_inv_pend_model_predict(model_init_params):
 
 @pytest.fixture
 def simple_model_init_params():
-    time_step = 1 / 20  # 20 hz or 0.2 seconds
+    prediction_step = 1 / 20  # 20 hz or 0.2 seconds
     commanded_lon_vel = 1.5  # m/s
-    horizon = time_step * 3  # s
-    sample_length = int(horizon / time_step)
+    horizon = prediction_step * 3  # s
+    sample_length = int(horizon / prediction_step)
     number_samples = 3
     input_dimension = 1  # input array dimension
     state_dimension = 4  # state array dimension
@@ -119,7 +119,7 @@ def simple_model_init_params():
     pendulum_mass = 1  # kg
     sample_input = np.array([[1, 4, 7], [2, 5, 8], [3, 6, 9]]).reshape((3, 3, 1))
     return (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -135,7 +135,7 @@ def simple_model_init_params():
 
 def test_mpc_inv_pend_model_simple_sampling(simple_model_init_params):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -148,9 +148,9 @@ def test_mpc_inv_pend_model_simple_sampling(simple_model_init_params):
         sample_input,
     ) = simple_model_init_params
 
-    # inv_pendulum_model = InvPendulumModel(time_step, number_samples, sample_length, cart_mass, pendulum_mass)
+    # inv_pendulum_model = InvPendulumModel(prediction_step, number_samples, sample_length, cart_mass, pendulum_mass)
     inv_pendulum_model = InvPendulumModel(
-        time_step=time_step,
+        prediction_step=prediction_step,
         number_samples=number_samples,
         sample_length=sample_length,
         state_dimension=state_dimension,

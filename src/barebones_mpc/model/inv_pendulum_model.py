@@ -7,7 +7,7 @@ import numpy as np
 class InvPendulumModel(AbstractModel):
     def __init__(
         self,
-        time_step: int,
+        prediction_step: int,
         number_samples: int,
         sample_length: int,
         state_dimension: int,
@@ -23,13 +23,13 @@ class InvPendulumModel(AbstractModel):
 
         """
         super().__init__(
-            time_step=time_step,
+            prediction_step=prediction_step,
             number_samples=number_samples,
             sample_length=sample_length,
             state_dimension=state_dimension,
         )
 
-        self.time_step = time_step
+        self.prediction_step = prediction_step
         self.number_samples = number_samples
         self.sample_length = sample_length
 
@@ -41,10 +41,20 @@ class InvPendulumModel(AbstractModel):
         self.epsilon = pendulum_mass / (cart_mass + pendulum_mass)
         print(self.epsilon)
 
-        self.state_transition_matrix = np.array([[0, 1, 0, 0], [0, 0, -self.epsilon, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
+        self.state_transition_matrix = np.array(
+            [  # fmt: skip
+                [0, 1, 0, 0],
+                [0, 0, -self.epsilon, 0],
+                [0, 0, 0, 1],
+                [0, 0, 1, 0],
+            ]
+        )
+
         self.input_transition = np.array([0, 1, 0, -1]).reshape((4, 1))
 
-        self.sample_states = np.empty((self.sample_length + 1, self.number_samples, self.state_dimension))
+        self.sample_states = np.empty(
+            (self.sample_length + 1, self.number_samples, self.state_dimension)
+        )
 
     @classmethod
     def _specialized_config_required_fields(cls) -> List[str]:
@@ -62,9 +72,9 @@ class InvPendulumModel(AbstractModel):
         self.sample_states[0, :, :] = init_state
         for j in range(0, self.number_samples):
             for i in range(1, self.sample_length + 1):
-                self.sample_states[i, j, :] = self._predict(self.sample_states[i - 1, j, :], sample_input[i - 1, j, :])[
-                    :, 0
-                ]
+                self.sample_states[i, j, :] = self._predict(
+                    self.sample_states[i - 1, j, :], sample_input[i - 1, j, :]
+                )[:, 0]
 
         return self.sample_states
 
@@ -76,6 +86,9 @@ class InvPendulumModel(AbstractModel):
         :return: predicted state array
         """
         init_state = init_state.reshape((self.state_dimension, 1))
-        state_diff = self.state_transition_matrix @ init_state + self.input_transition * initial_input
+        state_diff = (
+            self.state_transition_matrix @ init_state
+            + self.input_transition * initial_input
+        )
 
-        return init_state + state_diff * self.time_step
+        return init_state + state_diff * self.prediction_step

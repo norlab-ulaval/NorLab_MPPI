@@ -29,7 +29,7 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
     ) -> Dict:
         try:
             horizon = config["hparam"]["sampler_hparam"]["horizon"]
-            time_step = config["hparam"]["sampler_hparam"]["prediction_step"]
+            prediction_step = config["hparam"]["sampler_hparam"]["prediction_step"]
         except KeyError as e:
             raise KeyError(
                 f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
@@ -39,7 +39,7 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
             ) from e
 
         values_from_callback = {
-            "sample_length": int(horizon / time_step),
+            "sample_length": int(horizon / prediction_step),
             "input_dimension": config["environment"]["input_space"]["dim"],
         }
         return values_from_callback

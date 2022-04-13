@@ -4,7 +4,7 @@ import numpy as np
 class Model:
     def __init__(self, rate):
         self.rotation_matrix = np.eye(3)
-        self.time_step = 1.0 / rate
+        self.prediction_step = 1.0 / rate
 
     def _update_rotation_matrix(self, yaw):
         self.rotation_matrix[0, 0] = self.rotation_matrix[1, 1] = np.cos(yaw)
@@ -27,5 +27,5 @@ class Model:
             for j in range(1, trajectories.shape[1]):
                 self._update_rotation_matrix(commands[i, j - 1, 2])
                 trajectories[i, j, :] = trajectories[i, j - 1, :] + self.rotation_matrix.transpose() @ \
-                                        commands[i, j - 1, :] * self.time_step
+                                        commands[i, j - 1, :] * self.prediction_step
         return trajectories

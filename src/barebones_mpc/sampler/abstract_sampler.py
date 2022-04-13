@@ -57,11 +57,11 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
             ) from e
 
         horizon: int = specialized_config["horizon"]
-        time_step: int = specialized_config["prediction_step"]
+        prediction_step: int = specialized_config["prediction_step"]
         values_from_callback = {
             "input_dimension": input_dimension,
             "init_state": np.zeros(observation_dim),
-            "sample_length": int(horizon / time_step),
+            "sample_length": int(horizon / prediction_step),
             "input_type": input_type,
             "input_space": input_space,
         }

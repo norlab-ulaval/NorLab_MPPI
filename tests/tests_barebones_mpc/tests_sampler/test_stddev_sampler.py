@@ -26,10 +26,10 @@ def test_config_init(config_sampler):
 
 @pytest.fixture
 def sampler_init_params():
-    time_step = 1 / 20  # 20 hz or 0.2 seconds
+    prediction_step = 1 / 20  # 20 hz or 0.2 seconds
     commanded_lon_vel = 1.5  # m/s
     horizon = 0.75  # s
-    sample_length = int(horizon / time_step)
+    sample_length = int(horizon / prediction_step)
     number_samples = 1000
     input_dimension = 2  # input array dimension
     state_dimension = 2
@@ -37,7 +37,7 @@ def sampler_init_params():
     std_dev = np.array([1.5])  # rad/s
 
     return (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -51,10 +51,10 @@ def sampler_init_params():
 
 @pytest.fixture
 def std_dev_inv_pendulum_model_init_params():
-    time_step = 1 / 20  # 20 hz or 0.2 seconds
+    prediction_step = 1 / 20  # 20 hz or 0.2 seconds
     commanded_lon_vel = 1.5  # m/s
     horizon = 0.75  # s
-    sample_length = int(horizon / time_step)
+    sample_length = int(horizon / prediction_step)
     number_samples = 1000
     input_dimension = 1  # input array dimension
     state_dimension = 4  # state array dimension
@@ -65,7 +65,7 @@ def std_dev_inv_pendulum_model_init_params():
     std_dev = np.array([0.1])
 
     return (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -82,7 +82,7 @@ def std_dev_inv_pendulum_model_init_params():
 
 def test_mpc_stddev_init(sampler_init_params, config_sampler):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -108,7 +108,7 @@ def test_mpc_stddev_init(sampler_init_params, config_sampler):
 
 def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_params):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -123,7 +123,7 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
     ) = std_dev_inv_pendulum_model_init_params
 
     inv_pendulum_model = InvPendulumModel(
-        time_step=time_step,
+        prediction_step=prediction_step,
         number_samples=number_samples,
         sample_length=sample_length,
         state_dimension=state_dimension,
@@ -141,7 +141,7 @@ def test_mpc_stddev_inv_pendulum_sample_input(std_dev_inv_pendulum_model_init_pa
 
 def test_mpc_stddev_inv_pendulum_sample_input_2(std_dev_inv_pendulum_model_init_params):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -156,7 +156,7 @@ def test_mpc_stddev_inv_pendulum_sample_input_2(std_dev_inv_pendulum_model_init_
     ) = std_dev_inv_pendulum_model_init_params
 
     inv_pendulum_model = InvPendulumModel(
-        time_step=time_step,
+        prediction_step=prediction_step,
         number_samples=number_samples,
         sample_length=sample_length,
         state_dimension=state_dimension,
@@ -175,10 +175,10 @@ def test_mpc_stddev_inv_pendulum_sample_input_2(std_dev_inv_pendulum_model_init_
 
 @pytest.fixture
 def std_dev_sample_straight_line_params():
-    time_step = 1 / 20  # 20 hz or 0.2 seconds
+    prediction_step = 1 / 20  # 20 hz or 0.2 seconds
     commanded_lon_vel = 1.5  # m/s
     horizon = 0.75  # s
-    sample_length = int(horizon / time_step)
+    sample_length = int(horizon / prediction_step)
     number_samples = 1000
     input_dimension = 1  # input array dimension
     state_dimension = 4  # state array dimension
@@ -189,7 +189,7 @@ def std_dev_sample_straight_line_params():
     std_dev = np.array([0.0])
 
     return (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -206,7 +206,7 @@ def std_dev_sample_straight_line_params():
 
 def test_mpc_barebones_sample(std_dev_sample_straight_line_params):
     (
-        time_step,
+        prediction_step,
         commanded_lon_vel,
         horizon,
         sample_length,
@@ -221,7 +221,7 @@ def test_mpc_barebones_sample(std_dev_sample_straight_line_params):
     ) = std_dev_sample_straight_line_params
 
     inv_pendulum_model = InvPendulumModel(
-        time_step=time_step,
+        prediction_step=prediction_step,
         number_samples=number_samples,
         sample_length=sample_length,
         state_dimension=state_dimension,

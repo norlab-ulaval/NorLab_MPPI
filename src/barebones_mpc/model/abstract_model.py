@@ -7,9 +7,9 @@ from src.barebones_mpc.abstract_model_predictive_control_component import Abstra
 
 
 class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
-    def __init__(self, time_step: int, number_samples: int, sample_length: int, state_dimension: int):
+    def __init__(self, prediction_step: int, number_samples: int, sample_length: int, state_dimension: int):
         super().__init__()
-        self.time_step = time_step
+        self.prediction_step = prediction_step
         self.number_samples = number_samples
         self.sample_length = sample_length
 
@@ -31,7 +31,7 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
             observation_dim: int = config["environment"]["observation_space"]["dim"]
             number_samples: int = config["hparam"]["sampler_hparam"]["number_samples"]
             horizon: int = config["hparam"]["sampler_hparam"]["horizon"]
-            time_step: int = config["hparam"]["sampler_hparam"]["prediction_step"]
+            prediction_step: int = config["hparam"]["sampler_hparam"]["prediction_step"]
         except KeyError as e:
             raise KeyError(
                 f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
@@ -42,8 +42,8 @@ class AbstractModel(ABC, AbstractModelPredictiveControlComponent):
             ) from e
 
         values_from_callback = {
-            "sample_length": int(horizon / time_step),
-            "time_step": time_step,
+            "sample_length": int(horizon / prediction_step),
+            "prediction_step": prediction_step,
             "state_dimension": observation_dim,
             "number_samples": number_samples,
         }
