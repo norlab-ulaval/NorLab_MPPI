@@ -47,7 +47,7 @@ class TestModelPredictiveControlerMock:
         mpc = ModelPredictiveControler(config_path=path_to_config_with_MOCK_subclass)
         mpc.execute()
 
-    @pytest.mark.skip(reason="ToDo: iemplement mp4 recording")
+    @pytest.mark.skip(reason="ToDo: implement mp4 recording")
     def test_execute_record(self, path_to_config_with_MOCK_subclass):
         # config_path = path_to_config_with_MOCK_subclass
         # mpc = ModelPredictiveControler(config_path=config_path)

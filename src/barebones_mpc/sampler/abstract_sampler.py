@@ -39,7 +39,7 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
 
     @classmethod
     def _specialized_config_required_fields(cls) -> List[str]:
-        return ["number_samples", "horizon", "steps_per_prediction"]
+        return ["number_samples", "horizon", "prediction_step"]
 
     def _config_pre__init__callback(self, config: Dict, specialized_config: Dict,
                                     init__signature_values_from_config: Dict) -> Dict:
@@ -57,7 +57,7 @@ class AbstractSampler(ABC, AbstractModelPredictiveControlComponent):
             ) from e
 
         horizon: int = specialized_config["horizon"]
-        time_step: int = specialized_config["steps_per_prediction"]
+        time_step: int = specialized_config["prediction_step"]
         values_from_callback = {
             "input_dimension": input_dimension,
             "init_state": np.zeros(observation_dim),

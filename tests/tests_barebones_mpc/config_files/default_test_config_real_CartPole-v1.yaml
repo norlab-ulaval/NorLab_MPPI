@@ -35,7 +35,7 @@ hparam:
   sampler_hparam:
     number_samples: 1000
     horizon: 0.75
-    steps_per_prediction: 0.05
+    prediction_step: 0.05
     std_dev: 1.5
     test_arbitrary_param: [3, 3, 3]
   model_hparam:

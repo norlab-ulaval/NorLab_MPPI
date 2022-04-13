@@ -23,7 +23,7 @@ hparam:
   sampler_hparam:
     number_samples: 15
     horizon: 50
-    steps_per_prediction: 10.0
+    prediction_step: 10.0
   model_hparam:
     <placeholder>: 0
 constraints:

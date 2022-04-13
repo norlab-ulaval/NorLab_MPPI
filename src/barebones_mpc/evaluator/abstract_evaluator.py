@@ -35,14 +35,14 @@ class AbstractEvaluator(ABC, AbstractModelPredictiveControlComponent):
             observation_dim: int = config["environment"]["observation_space"]["dim"]
             number_samples: int = config["hparam"]["sampler_hparam"]["number_samples"]
             horizon: int = config["hparam"]["sampler_hparam"]["horizon"]
-            time_step: int = config["hparam"]["sampler_hparam"]["steps_per_prediction"]
+            time_step: int = config["hparam"]["sampler_hparam"]["prediction_step"]
         except KeyError as e:
             raise KeyError(
                 f"{self.NAMED_ERR()} There's required baseclass parameters missing in the config file. Make sure that "
                 f"both following key exist: "
                 f"`environment:input_space:dim`,`environment:observation_space:dim`, "
                 f"`hparam:sampler_hparam:number_samples`, `hparam:sampler_hparam:horizon` and "
-                f"`hparam:sampler_hparam:steps_per_prediction`\n"
+                f"`hparam:sampler_hparam:prediction_step`\n"
                 f"{e}"
             ) from e
 

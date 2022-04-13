@@ -56,7 +56,7 @@ class AbstractModelPredictiveControlComponent(metaclass=ABCMeta):
         >>>     def _config_pre__init__callback(self, config: Dict, subclass_config: Dict, signature_values_from_config:
         Dict) -> Dict:
         >>>     horizon: int = specialized_config['horizon']
-        >>>     time_step: int = specialized_config['steps_per_prediction']
+        >>>     time_step: int = specialized_config['prediction_step']
         >>>
         >>>     values_from_callback = {
         >>>         'sample_length':   int(horizon/time_step),

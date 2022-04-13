@@ -25,7 +25,7 @@ class SetUpConfigSelector:
         assert self.config is not None
         self.number_samples = self.config["hparam"]["sampler_hparam"]["number_samples"]
         horizon = self.config["hparam"]["sampler_hparam"]["horizon"]
-        time_step = self.config["hparam"]["sampler_hparam"]["steps_per_prediction"]
+        time_step = self.config["hparam"]["sampler_hparam"]["prediction_step"]
         self.sample_length = int(horizon / time_step)
         self.input_dimension = self.config["environment"]["observation_space"]["dim"]
         self.state_dimension = self.config["environment"]["input_space"]["dim"]
