@@ -1,0 +1,39 @@
+# Norlab-MPPI barebones_mpc config
+---
+config_name: 'broken'
+config_short_description: ""
+controler_component:
+  nominalPath: src.barebones_mpc.nominal_path.abstract_NP.MockNominalPath
+  model: src.barebones_mpc.model.abstract_model
+  sampler: src.barebones_mpc.sampler.abstract_sampler
+  evaluator: src.barebones_mpc.evaluator.abstract_evaluator
+  selector: src.barebones_mpc.selector.abstract_selector
+environment:
+  type: 'gym'
+  name: 'Pendulum-v1'
+  observation_space:
+    max_speed: 8
+  input_space:
+    max_torque: 2.0
+hparam:
+  experimental_hparam:
+    experimental_window: 15
+    seed: 0
+    show_plot: true
+  sampler_hparam:
+    number_samples: 15
+    horizon: 50
+    prediction_step: 10.0
+  model_hparam:
+    <placeholder>: 0
+constraints:
+  input_constraint:
+    <input-space-1-placeholder>:
+      uper_bound: 1.0
+      lowwer_bound: -1.0
+  state-constraint:
+    <state-space-1-placeholder>:
+      uper_bound: 1.0
+      lowwer_bound: -1.0
+experimental_notes: |
+  Nothing for now

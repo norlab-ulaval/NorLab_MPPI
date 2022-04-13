@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 def verify_pytorch_install() -> None:
     """
     Minimal pytorch install verification. If the consol print a tensor like this, your good
@@ -20,22 +21,23 @@ def verify_pytorch_install() -> None:
     try:
         import torch
 
-        print(f'> PyTorch version:    {torch.__version__}')
+        print(f"> PyTorch version:    {torch.__version__}")
 
         x = torch.rand(5, 3)
         print("\n", x)
         print("\n> PyTorch install is good to go!\n")
     except Exception as e:
-        print("> (!) Something is wrong with PyTorch. It's probably the Dockerized-SNOW python interpreter\n")
-        print(e)
-        raise e
+        # Note: The exception scope is large on purpose
+        raise Exception(
+            f"DS | Something is wrong with PyTorch. It's probably the Dockerized-SNOW python interpreter\n" f"{e}"
+        ) from e
 
     return None
 
 
 def verify_pytorch_cuda_install() -> None:
     """
-    Minimal pytorch<<<>>>CUDA install verification. If the consol print a tensor like this, your good
+    Minimal pytorch<->CUDA install verification. If the consol print a tensor like this, your good
 
         tensor([[0.3380, 0.3845, 0.3217],
                 [0.8337, 0.9050, 0.2650],
@@ -47,14 +49,14 @@ def verify_pytorch_cuda_install() -> None:
 
     :return: None
     """
-    print("\n> Start Pytorch<<>>CUDA install check")
+    print("\n> Start Pytorch<->CUDA install check")
 
     import torch
 
     cuda_is_available = torch.cuda.is_available()
 
-    # assert cuda_is_available, "> (!) CUDA is not available to PyTorch\n"
-    # print(f"> CUDA is available:  {cuda_is_available}")
+    # assert cuda_is_available, "DS | CUDA is not available to PyTorch\n"
+    # print(f"DS | CUDA is available:  {cuda_is_available}")
 
     if cuda_is_available:
         try:
@@ -65,19 +67,17 @@ def verify_pytorch_cuda_install() -> None:
             print("\n", x)
             print("\n> PyTorch can access CUDA\n")
         except Exception as e:
-            print("> (!) Something is wrong with PyTorch<<>>CUDA install.\n")
-            print(e)
-            raise e
+            # Note: The exception scope is large on purpose
+            raise Exception(f"DS | Something is wrong with the PyTorch<->CUDA install.\n" f"{e}") from e
+
     else:
-        # print(f"> CUDA is NOT available")
-        print("> (!) Can't check PyTorch<<>>CUDA install.\n")
+        print("> DS | Can't check PyTorch<->CUDA install.\n")
         raise ResourceWarning("DS | CUDA is NOT available on this computer\n")
 
     return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     verify_pytorch_install()
     verify_pytorch_cuda_install()
-

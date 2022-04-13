@@ -1,0 +1,26 @@
+# Norlab-MPPI barebones_mpc config
+---
+config_name: 'default Pendulum-v1'
+config_short_description: "gym Pendulum-v1 test configuragtion"
+controler_component:
+  model: src.barebones_mpc.model.abstract_model.MockModel
+  sampler: src.barebones_mpc.sampler.abstract_sampler.MockSampler
+  evaluator: src.barebones_mpc.evaluator.abstract_evaluator.MockEvaluator
+  selector: src.barebones_mpc.selector.abstract_selector.MockSelector
+force_headless_mode: true
+record: false
+environment:
+  type: 'gym'
+  name: 'Pendulum-v1'
+  rendering_interval: 1
+  observation_space:
+    cos_theta: 1.0
+    sin_angle: 1.0
+    angular_velocity: 8.0
+  input_space:
+    type: continuous
+    shape: [1]
+    max_torque: 2.0
+hparam: None
+experimental_notes: |
+  Nothing for now

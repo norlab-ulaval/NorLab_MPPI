@@ -25,7 +25,7 @@ def is_automated_test() -> bool:
 #     :return: user_spec or test_spec
 #     """
 #     parser = argparse.ArgumentParser()
-#     parser.add_argument('-t', '--testSpec', action='store_true', help='Use test spec')
+#     parser.add_argument('-t', '--testSpec', input='store_true', help='Use test spec')
 #
 #     args = parser.parse_args()
 #
