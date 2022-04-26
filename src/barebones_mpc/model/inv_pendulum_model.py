@@ -39,7 +39,7 @@ class InvPendulumModel(AbstractModel):
         self.cart_mass = cart_mass
         self.pendulum_mass = pendulum_mass
         self.epsilon = pendulum_mass / (cart_mass + pendulum_mass)
-        print(self.epsilon)
+        print("::: InvPendulumModel.epsilon", self.epsilon)
 
         self.state_transition_matrix = np.array(
             [  # fmt: skip

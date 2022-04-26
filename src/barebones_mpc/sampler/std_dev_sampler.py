@@ -46,20 +46,23 @@ class StandardDevSampler(AbstractSampler):
 
         # (CRITICAL) ToDo:implement >> input space type: continuous case and discrete case
         # (CRITICAL) ToDo:implement >> input space constraint
-        if self.input_type == "discrete":
-            self.sample_input = np.random.randint(
-                low=self.input_space[0], high=self.input_space[1], size=self.sample_input.shape
-            )
+        # if self.input_type == "discrete":
+        #     self.sample_input = np.random.randint(
+        #         low=self.input_space[0], high=self.input_space[1]+1, size=self.sample_input.shape
+        #     )
 
             # self.sample_input = np.rint(self.sample_input).astype(int)
-        elif self.input_type == "continuous":
-            sample_noise = np.random.normal(
-                loc=0, scale=self.std_dev, size=(self.sample_length, self.number_samples, self.input_dimension)
-            )
+        # if self.input_type == "continuous":
+        sample_noise = np.random.normal(
+            loc=0, scale=self.std_dev, size=(self.sample_length, self.number_samples, self.input_dimension)
+        )
 
-            self.sample_input[:, 1:, :] = sample_noise + np.tile(
-                nominal_input.reshape(self.sample_length, 1, self.input_dimension), (1, self.number_samples, 1)
-            )
+        self.sample_input[:, 1:, :] = sample_noise + np.tile(
+            nominal_input.reshape(self.sample_length, 1, self.input_dimension), (1, self.number_samples, 1)
+        )
+
+        if self.input_type == "discrete":
+            self.sample_input
 
         return self.sample_input
 

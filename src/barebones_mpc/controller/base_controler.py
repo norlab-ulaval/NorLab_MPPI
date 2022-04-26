@@ -143,7 +143,9 @@ class ModelPredictiveControler(object):
         trajectory_collector = TrajectoryCollector()
         timestep_collector = TimestepCollector()
 
-        nominal_inputs = self.nominal_path.bootstrap(state_t0)
+        assert self.nominal_path.sample_length >= 1, "The sample lenght is too short, check your sampler_hparam."
+        nominal_inputs: np.ndarray = self.nominal_path.bootstrap(state_t0)
+
 
         # ::: Start feedback loop ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         f"{self.MPC_feadbackloop_MSG()} Starting feedback loop"
@@ -192,8 +194,19 @@ class ModelPredictiveControler(object):
 
         self.environment.close()
 
-        if trajectory_collector.get_size() == 0:
+        if global_step == experimental_window_-1:
+            trajectory_collector.append(
+                trj_observations=timestep_collector.observations.copy(),
+                trj_actions=timestep_collector.actions.copy(),
+                trj_rewards=timestep_collector.rewards.copy(),
+                )
+            print(
+                f"{self.MPC_feadbackloop_MSG()} Trj {trajectory_collector.get_size()}: "
+                f"Trajectory interupted because experimental_window limit reached. Collected reward so far ={sum(timestep_collector.rewards)}"
+                )
+        elif trajectory_collector.get_size() == 0:
             print(f"{self.MPC_feadbackloop_MSG()} Did not reach any terminal state during the experimental window.")
+
 
         return trajectory_collector
 

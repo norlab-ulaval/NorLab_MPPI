@@ -61,6 +61,11 @@ def path_to_config_with_REAL_subclass():
     config_path = "tests/tests_barebones_mpc/config_files/default_test_config_real_CartPole-v1.yaml"
     return config_path
 
+@pytest.fixture(scope="function")
+def path_to_config_with_REAL_subclass_ALT():
+    config_path = "tests/tests_barebones_mpc/config_files/default_test_config_real_ALT_CartPole-v1.yaml"
+    return config_path
+
 
 class TestModelPredictiveControlerReal:
     def test_MPC_controler_init(self, path_to_config_with_REAL_subclass):
@@ -69,6 +74,15 @@ class TestModelPredictiveControlerReal:
     def test_execute_headless(self, path_to_config_with_REAL_subclass):
         mpc = ModelPredictiveControler(config_path=path_to_config_with_REAL_subclass)
         mpc.execute()
+
+    def test_execute_headless_w_prediction_step_type_int(self, path_to_config_with_REAL_subclass_ALT):
+        mpc = ModelPredictiveControler(config_path=path_to_config_with_REAL_subclass_ALT)
+        trajectory_collector = mpc.execute()
+        print("trj collector\n",  "\tsize", trajectory_collector.get_size())
+        # print("\ttrjs_rewards", trajectory_collector.trjs_rewards)
+        print("\ttrjs_actions", trajectory_collector.trjs_actions)
+
+
 
     @pytest.mark.skip(reason="ToDo: iemplement mp4 recording")
     def test_execute_record(self, path_to_config_with_REAL_subclass):
