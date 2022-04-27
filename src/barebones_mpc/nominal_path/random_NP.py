@@ -8,7 +8,7 @@ from gym import make as gym_make
 from src.barebones_mpc.nominal_path.abstract_NP import AbstractNominalPath
 
 
-class AlternateNominalPath(AbstractNominalPath):
+class RandomNominalPath(AbstractNominalPath):
     """ For testing purpose only"""
 
     def __init__(self, sample_length, input_dimension):
