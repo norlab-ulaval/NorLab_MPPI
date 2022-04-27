@@ -14,7 +14,10 @@ from src.barebones_mpc.evaluator.abstract_evaluator import AbstractEvaluator
 from src.barebones_mpc.selector.abstract_selector import AbstractSelector
 from src.barebones_mpc.nominal_path.abstract_NP import AbstractNominalPath
 
-from src.environment_adapter.adapters import make_environment_adapter, AbstractEnvironmentAdapter
+from src.environment_adapter.adapters import (
+    make_environment_adapter,
+    AbstractEnvironmentAdapter,
+)
 
 
 @dataclass
@@ -86,11 +89,21 @@ class ModelPredictiveControler(object):
         with open(config_path, "r") as f:
             self.config = dict(yaml.safe_load(f))
 
-        nominal_path_cls: Type[AbstractNominalPath] = import_controler_component_class(self.config, "nominalPath")
-        model_cls: Type[AbstractModel] = import_controler_component_class(self.config, "model")
-        sampler_cls: Type[AbstractSampler] = import_controler_component_class(self.config, "sampler")
-        evaluator_cls: Type[AbstractEvaluator] = import_controler_component_class(self.config, "evaluator")
-        selector_cls: Type[AbstractSelector] = import_controler_component_class(self.config, "selector")
+        nominal_path_cls: Type[AbstractNominalPath] = import_controler_component_class(
+            self.config, "nominalPath"
+        )
+        model_cls: Type[AbstractModel] = import_controler_component_class(
+            self.config, "model"
+        )
+        sampler_cls: Type[AbstractSampler] = import_controler_component_class(
+            self.config, "sampler"
+        )
+        evaluator_cls: Type[AbstractEvaluator] = import_controler_component_class(
+            self.config, "evaluator"
+        )
+        selector_cls: Type[AbstractSelector] = import_controler_component_class(
+            self.config, "selector"
+        )
 
         # ... Config validation ........................................................................................
         assert issubclass(nominal_path_cls, AbstractNominalPath), (
@@ -122,10 +135,13 @@ class ModelPredictiveControler(object):
 
         try:
             headless_mode_ = self.config["force_headless_mode"]
-            experimental_window_ = self.config["hparam"]["experimental_hparam"]["experimental_window"]
+            experimental_window_ = self.config["hparam"]["experimental_hparam"][
+                "experimental_window"
+            ]
         except KeyError as e:
             raise KeyError(
-                f"{self.MPC_ERROR()} There's required key-value missing in the config file. " f"Missing key >> {e}"
+                f"{self.MPC_ERROR()} There's required key-value missing in the config file. "
+                f"Missing key >> {e}"
             ) from e
 
         # ::: Initialize observation and nominal input at timestep 0 :::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -143,9 +159,10 @@ class ModelPredictiveControler(object):
         trajectory_collector = TrajectoryCollector()
         timestep_collector = TimestepCollector()
 
-        assert self.nominal_path.sample_length >= 1, "The sample lenght is too short, check your sampler_hparam."
+        assert (
+            self.nominal_path.sample_length >= 1
+        ), "The sample lenght is too short, check your sampler_hparam."
         nominal_inputs: np.ndarray = self.nominal_path.bootstrap(state_t0)
-
 
         # ::: Start feedback loop ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         f"{self.MPC_feadbackloop_MSG()} Starting feedback loop"
@@ -156,15 +173,21 @@ class ModelPredictiveControler(object):
 
             # ... Virtualy sample many alternate trajectories...........................................................
             sample_inputs = self.sampler.sample_inputs(nominal_input=nominal_inputs)
-            sample_states = self.sampler.sample_states(sample_input=sample_inputs, init_state=observation)
+            sample_states = self.sampler.sample_states(
+                sample_input=sample_inputs, init_state=observation
+            )
 
             # ... Evaluate samples .....................................................................................
-            self.evaluator.compute_sample_costs(sample_input=sample_inputs, sample_states=sample_states)
+            self.evaluator.compute_sample_costs(
+                sample_input=sample_inputs, sample_states=sample_states
+            )
             sample_costs = self.evaluator.get_trajectories_cumulative_cost()
 
             # ... Choose the optimal trajectory and commit to the first input command ..................................
             nominal_inputs, nominal_states = self.selector.select_next_input(
-                sample_states=sample_states, sample_inputs=sample_inputs, sample_costs=sample_costs
+                sample_states=sample_states,
+                sample_inputs=sample_inputs,
+                sample_costs=sample_costs,
             )
             first_input = nominal_inputs.ravel()[0]
 
@@ -172,10 +195,14 @@ class ModelPredictiveControler(object):
                 first_input
             ), f"{self.MPC_ERROR()} The input {first_input} is not a legal input"
 
-            next_observation, cost, done, info = self.environment.step(action=first_input)
+            next_observation, env_reward, done, info = self.environment.step(
+                action=first_input
+            )
 
             # ... Trajectory data book keeping .........................................................................
-            timestep_collector.append(observation=observation, action=first_input, reward=cost)
+            timestep_collector.append(
+                observation=observation, action=first_input, reward=env_reward
+            )
 
             if done:
                 next_observation = self.environment.reset()
@@ -185,28 +212,32 @@ class ModelPredictiveControler(object):
                     trj_rewards=timestep_collector.rewards.copy(),
                 )
                 print(
-                    f"{self.MPC_feadbackloop_MSG()} Trj {trajectory_collector.get_size()}: "
+                    f"{self.MPC_feadbackloop_MSG()} Gbl: {global_step}  Trj {trajectory_collector.get_size()}: "
                     f"Terminal state reached with return={sum(timestep_collector.rewards)}"
                 )
                 timestep_collector.reset()
 
+            nominal_inputs[:-1] = nominal_inputs[1:]
+            nominal_inputs[-1] = self.nominal_path.bootstrap_single_input()
             observation = next_observation
 
         self.environment.close()
 
-        if global_step == experimental_window_-1:
+        if global_step == experimental_window_ - 1:
             trajectory_collector.append(
                 trj_observations=timestep_collector.observations.copy(),
                 trj_actions=timestep_collector.actions.copy(),
                 trj_rewards=timestep_collector.rewards.copy(),
-                )
+            )
             print(
                 f"{self.MPC_feadbackloop_MSG()} Trj {trajectory_collector.get_size()}: "
-                f"Trajectory interupted because experimental_window limit reached. Collected reward so far ={sum(timestep_collector.rewards)}"
-                )
+                f"Trajectory interupted because experimental_window limit reached. Collected reward so far ="
+                f"{sum(timestep_collector.rewards)}"
+            )
         elif trajectory_collector.get_size() == 0:
-            print(f"{self.MPC_feadbackloop_MSG()} Did not reach any terminal state during the experimental window.")
-
+            print(
+                f"{self.MPC_feadbackloop_MSG()} Did not reach any terminal state during the experimental window."
+            )
 
         return trajectory_collector
 

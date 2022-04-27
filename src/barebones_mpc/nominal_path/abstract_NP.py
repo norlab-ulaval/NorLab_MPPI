@@ -56,6 +56,15 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
         """
         pass
 
+    @abstractmethod
+    def bootstrap_single_input(self, state_t=None) -> Any:
+        """ Bootstrap a single input
+
+        :param state_t:
+        :return a single input
+        """
+        pass
+
 
 class MockNominalPath(AbstractNominalPath):
     """ For testing purpose only"""
@@ -73,9 +82,12 @@ class MockNominalPath(AbstractNominalPath):
         except AttributeError:
             pass
 
+    def bootstrap_single_input(self, state_t=None) -> Any:
+        return self.env.action_space.sample()
+
     # def bootstrap(self, state_t0) -> Tuple[Union[int, float, np.ndarray], np.ndarray]:
     def bootstrap(self, state_t0=None) -> np.ndarray:
-        initial_nominal_input = self.env.action_space.sample()
+        initial_nominal_input = self.bootstrap_single_input()
         initial_nominal_inputs = np.full(
             shape=(self.sample_length, self.input_dimension), fill_value=initial_nominal_input
         )

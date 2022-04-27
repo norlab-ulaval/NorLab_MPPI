@@ -3,11 +3,11 @@ import src.barebones_mpc.sampler.std_dev_sampler
 from src.barebones_mpc.abstract_model_predictive_control_component import AbstractModelPredictiveControlComponent
 from src.barebones_mpc.controller.base_controler import ModelPredictiveControler, TrajectoryCollector
 
-config_path = "src/barebones_mpc/config_files/config_real_CartPole-v1_tuning.yaml"
+config_path = "src/barebones_mpc/config_files/config_real_CartPole-v1_discrete_random_tuning.yaml"
 mpc = ModelPredictiveControler(config_path=config_path)
 
 print("\n:: std_sampler:")
-std_sampler: src.barebones_mpc.sampler.std_dev_sampler.StandardDevSampler = mpc.sampler
+std_sampler = mpc.sampler
 print("    ↳ | sample_length", std_sampler.sample_length)
 
 trajectory_collector = mpc.execute()

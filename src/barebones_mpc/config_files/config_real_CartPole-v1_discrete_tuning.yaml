@@ -1,11 +1,11 @@
-# Norlab-MPPI barebones_mpc test config CartPole-v1
+# Norlab-MPPI barebones_mpc config CartPole-v1
 ---
-config_name: 'default CartPole-v1'
-config_short_description: "gym CartPole-v1 test configuragtion. Discrete"
+config_name: 'CartPole-v1 discrete sampler p'
+config_short_description: "gym CartPole-v1 Discrete hyper parma tunning"
 controler_component:
-  nominalPath: src.barebones_mpc.nominal_path.abstract_NP.MockNominalPath
+  nominalPath: src.barebones_mpc.nominal_path.alternate_NP.AlternateNominalPath
   model: src.barebones_mpc.model.inv_pendulum_model.InvPendulumModel
-  sampler: src.barebones_mpc.sampler.std_dev_sampler.StandardDevSampler
+  sampler: src.barebones_mpc.sampler.discrete_sampler_p.DiscreteSamplerP
   evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
   selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
 force_headless_mode: true
@@ -29,22 +29,22 @@ hparam:
     state_t0: ~
   nominal_path_bootstrap: ~
   experimental_hparam:
-    experimental_window: 200
+    experimental_window: 300
     seed: 0
     show_plot: true
   sampler_hparam:
-    number_samples: 1000
-    horizon: 0.75
+    number_samples: 5000
+    horizon: 0.7
     prediction_step: 0.05
-    std_dev: 0.15
+    nominal_input_change_probability: 0.75
   model_hparam:
     cart_mass: 1
-    pendulum_mass: 1
+    pendulum_mass: 3
   evaluator_hparam:
-    std_dev: 0.1
-    beta: 0
-    inverse_temperature: 0.01
-    state_weights: 1.0
+    std_dev: 0.8
+    beta: 1
+    inverse_temperature: 0.11
+    state_weights: 6
   selector_hparam: ~
 constraints:
   input_constraint:
