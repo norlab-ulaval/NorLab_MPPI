@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import TypeVar, Union, Any, Type, Tuple, List, Dict
 import numpy as np
 from gym import wrappers as gym_wrappers
@@ -48,7 +48,7 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def bootstrap(self, state_t0=None) -> Any:
+    def bootstrap(self, state_t0=None) -> np.ndarray:
         """ Bootstrap the initial nominal path
 
         :param state_t0:
@@ -57,7 +57,7 @@ class AbstractNominalPath(ABC, AbstractModelPredictiveControlComponent):
         pass
 
     @abstractmethod
-    def bootstrap_single_input(self, state_t=None) -> Any:
+    def bootstrap_single_input(self, state_t=None) -> Union[int, float, Tuple[Any], np.ndarray]:
         """ Bootstrap a single input
 
         :param state_t:
@@ -82,13 +82,12 @@ class MockNominalPath(AbstractNominalPath):
         except AttributeError:
             pass
 
-    def bootstrap_single_input(self, state_t=None) -> Any:
-        return self.env.action_space.sample()
-
-    # def bootstrap(self, state_t0) -> Tuple[Union[int, float, np.ndarray], np.ndarray]:
     def bootstrap(self, state_t0=None) -> np.ndarray:
         initial_nominal_input = self.bootstrap_single_input()
         initial_nominal_inputs = np.full(
             shape=(self.sample_length, self.input_dimension), fill_value=initial_nominal_input
         )
         return initial_nominal_inputs
+
+    def bootstrap_single_input(self, state_t=None) -> gym_wrappers.time_limit.TimeLimit.action_space:
+        return self.env.action_space.sample()

@@ -26,7 +26,7 @@ class AlternateNominalPath(AbstractNominalPath):
         except AttributeError:
             pass
 
-    def bootstrap_single_input(self, state_t=None) -> Any:
+    def bootstrap_single_input(self, state_t=None) -> gym_wrappers.time_limit.TimeLimit.action_space:
         return self.env.action_space.sample()
 
     def bootstrap(self, state_t0=None) -> np.ndarray:
@@ -34,8 +34,4 @@ class AlternateNominalPath(AbstractNominalPath):
             a=self._config["environment"]["input_space"]["legal_actions"],
             size=(self.sample_length, self.input_dimension),
         )
-        # initial_nominal_input = self.bootstrap_single_input()
-        # initial_nominal_inputs = np.full(
-        #     shape=(self.sample_length, self.input_dimension), fill_value=initial_nominal_input
-        # )
         return initial_nominal_inputs

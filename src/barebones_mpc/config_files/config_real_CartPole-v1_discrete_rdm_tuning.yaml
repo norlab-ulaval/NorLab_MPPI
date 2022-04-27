@@ -5,7 +5,7 @@ config_short_description: "gym CartPole-v1 Discrete hyper parma tunning"
 controler_component:
   nominalPath: src.barebones_mpc.nominal_path.alternate_NP.AlternateNominalPath
   model: src.barebones_mpc.model.inv_pendulum_model.InvPendulumModel
-  sampler: src.barebones_mpc.sampler.discrete_sampler_random.DiscreteSamplerRandom
+  sampler: src.barebones_mpc.sampler.discrete_sampler_rdm.DiscreteSamplerRandom
   evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
   selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
 force_headless_mode: true
@@ -33,14 +33,14 @@ hparam:
     seed: 0
     show_plot: true
   sampler_hparam:
-    number_samples: 1000
+    number_samples: 500
     horizon: 0.9
     prediction_step: 0.05
   model_hparam:
-    cart_mass: 1.5
-    pendulum_mass: 3
+    cart_mass: 1
+    pendulum_mass: 1
   evaluator_hparam:
-    std_dev: 2.6
+    std_dev: 0.25
     beta: 0.01
     inverse_temperature: 0.01
     state_weights: 4

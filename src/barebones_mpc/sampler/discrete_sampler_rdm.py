@@ -45,30 +45,13 @@ class DiscreteSamplerRandom(AbstractSampler):
         :param nominal_input: the nominal input array
         :return: sample input array
         """
-        # self.sample_input[:, 0, :] = np.expand_dims(nominal_input, axis=1)
-        # self.sample_input[:, 0, :] = nominal_input
-        # self.sample_input[:, 1:, :] = np.tile(
-        #     nominal_input.reshape(self.sample_length, 1, self.input_dimension), (1, self.number_samples, 1)
-        #     )
-
         # (CRITICAL) ToDo:implement >> input space constraint
         self.sample_input = np.random.randint(
-            low=self.input_space[0], high=self.input_space[1]+1, size=self.sample_input.shape,
+            low=self.input_space[0],
+            high=self.input_space[1] + 1,
+            size=self.sample_input.shape,
             dtype=np.int,
         )
-
-        # sample_input_change_map = np.random.binomial(
-        #     n=1, p=self.nominal_input_change_probability, size=self.sample_input.shape
-        # )
-        # sample_input_change_map[:, 0, :] = 0
-        #
-        # sample_input_change_map = sample_input_change_map.ravel()
-        # sample_input_ = self.sample_input.ravel()
-        #
-        # sample_input_[sample_input_change_map == 1] += 1
-        # sample_input_[sample_input_ == 2] = 0
-        # self.sample_input = sample_input_.reshape(self.sample_input.shape)
-
         return self.sample_input
 
     def sample_states(self, sample_input, init_state):

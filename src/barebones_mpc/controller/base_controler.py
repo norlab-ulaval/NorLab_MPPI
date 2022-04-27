@@ -215,7 +215,10 @@ class ModelPredictiveControler(object):
                     f"{self.MPC_feadbackloop_MSG()} Gbl: {global_step}  Trj {trajectory_collector.get_size()}: "
                     f"Terminal state reached with return={sum(timestep_collector.rewards)}"
                 )
+
+                # Reset
                 timestep_collector.reset()
+                nominal_inputs: np.ndarray = self.nominal_path.bootstrap(state_t0)
 
             nominal_inputs[:-1] = nominal_inputs[1:]
             nominal_inputs[-1] = self.nominal_path.bootstrap_single_input()

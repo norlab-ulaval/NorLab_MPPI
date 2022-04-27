@@ -1,11 +1,11 @@
 # Norlab-MPPI barebones_mpc test config CartPole-v1
 ---
-config_name: 'default CartPole-v1'
+config_name: 'default CartPole-v1 discrete'
 config_short_description: "gym CartPole-v1 test configuragtion. Discrete"
 controler_component:
   nominalPath: src.barebones_mpc.nominal_path.abstract_NP.MockNominalPath
   model: src.barebones_mpc.model.inv_pendulum_model.InvPendulumModel
-  sampler: src.barebones_mpc.sampler.std_dev_sampler.StandardDevSampler
+  sampler: src.barebones_mpc.sampler.discrete_sampler_rdm.DiscreteSamplerRandom
   evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
   selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
 force_headless_mode: true

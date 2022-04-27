@@ -7,6 +7,7 @@ import numpy as np
 
 from src.barebones_mpc.sampler.abstract_sampler import AbstractSampler
 from src.barebones_mpc.sampler.std_dev_sampler import StandardDevSampler
+from src.barebones_mpc.sampler.discrete_sampler_rdm import DiscreteSamplerRandom
 from src.barebones_mpc.model.inv_pendulum_model import InvPendulumModel
 
 import pandas as pd
@@ -17,7 +18,7 @@ from matplotlib import pyplot as plt
 
 
 def test_config_init(config_sampler):
-    instance = StandardDevSampler.config_init(config=config_sampler.config, model=config_sampler.model)
+    instance = DiscreteSamplerRandom.config_init(config=config_sampler.config, model=config_sampler.model)
     assert isinstance(instance, AbstractSampler)
 
 

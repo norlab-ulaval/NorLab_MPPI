@@ -33,18 +33,18 @@ hparam:
     seed: 0
     show_plot: true
   sampler_hparam:
-    number_samples: 5000
+    number_samples: 500
     horizon: 0.7
     prediction_step: 0.05
-    nominal_input_change_probability: 0.75
+    nominal_input_change_probability: 0.55
   model_hparam:
     cart_mass: 1
-    pendulum_mass: 3
+    pendulum_mass: 2
   evaluator_hparam:
-    std_dev: 0.8
+    std_dev: 0.2
     beta: 1
-    inverse_temperature: 0.11
-    state_weights: 6
+    inverse_temperature: 0.01
+    state_weights: 5
   selector_hparam: ~
 constraints:
   input_constraint:
