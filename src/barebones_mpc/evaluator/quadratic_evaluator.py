@@ -14,7 +14,7 @@ class QuadraticEvaluator(AbstractEvaluator):
         std_dev: Union[float, np.ndarray],
         beta: int,
         inverse_temperature: float,
-        state_weights: Union[np.ndarray, float],
+        state_weights: Union[List, np.ndarray, float],
         reference_state: np.ndarray = None,
     ):
         super().__init__(
@@ -29,11 +29,13 @@ class QuadraticEvaluator(AbstractEvaluator):
         self.input_covariance = np.empty((self.input_dimension, self.input_dimension))
         np.fill_diagonal(self.input_covariance, self.std_dev)
         self.input_covariance_inverse = np.linalg.inv(self.input_covariance)
-        self.sample_costs = np.zeros((self.sample_length, self.number_samples))
-        self.sample_total_costs = np.zeros((1, self.number_samples))
+        self.sample_costs = np.full(shape=(self.sample_length, self.number_samples), fill_value=np.infty)
+        self.sample_total_costs = np.full(shape=(1, self.number_samples), fill_value=np.infty)
 
         if type(state_weights) is float:
             state_weights = np.full(shape=(state_dimension,), fill_value=state_weights)
+        elif type(state_weights) is list:
+            state_weights = np.array(state_weights)
 
         self.state_weights = np.zeros((self.state_dimension, self.state_dimension))
         np.fill_diagonal(self.state_weights, state_weights)
@@ -49,7 +51,11 @@ class QuadraticEvaluator(AbstractEvaluator):
     @classmethod
     def _specialized_config_required_fields(cls) -> List[str]:
         required_field: List[str] = super()._specialized_config_required_fields()
-        required_field.extend(["std_dev", "beta", "inverse_temperature"])
+        required_field.extend(["std_dev",
+                               "beta",
+                               "inverse_temperature",
+                               "state_weights"
+                               ])
         return required_field
 
     def _config_pre__init__callback(
@@ -104,7 +110,8 @@ class QuadraticEvaluator(AbstractEvaluator):
         :return state_cost: state cost
         """
         error = state - reference
-        return error.transpose() @ self.state_weights @ error
+        state_cost = error.transpose()@self.state_weights@error
+        return state_cost
 
     def compute_final_state_cost(self, final_state: np.ndarray) -> float:
         """ compute a final state cost

@@ -204,8 +204,12 @@ class ModelPredictiveControler(object):
                 observation=observation, action=first_input, reward=env_reward
             )
 
+            nominal_inputs[:-1] = nominal_inputs[1:]
+            nominal_inputs[-1] = self.nominal_path.bootstrap_single_input()
+            observation = next_observation
+
             if done:
-                next_observation = self.environment.reset()
+                observation = self.environment.reset()
                 trajectory_collector.append(
                     trj_observations=timestep_collector.observations.copy(),
                     trj_actions=timestep_collector.actions.copy(),
@@ -219,10 +223,6 @@ class ModelPredictiveControler(object):
                 # Reset
                 timestep_collector.reset()
                 nominal_inputs: np.ndarray = self.nominal_path.bootstrap(state_t0)
-
-            nominal_inputs[:-1] = nominal_inputs[1:]
-            nominal_inputs[-1] = self.nominal_path.bootstrap_single_input()
-            observation = next_observation
 
         self.environment.close()
 

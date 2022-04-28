@@ -54,11 +54,7 @@ class DiscreteSamplerP(AbstractSampler):
             nominal_input.reshape(self.sample_length, 1, self.input_dimension), (1, self.number_samples, 1)
             )
 
-        # (CRITICAL) ToDo:implement >> input space type: continuous case and discrete case
         # (CRITICAL) ToDo:implement >> input space constraint
-        # self.sample_input = np.random.randint(
-        #     low=self.input_space[0], high=self.input_space[1]+1, size=self.sample_input.shape
-        # )
         sample_input_change_map = np.random.binomial(
             n=1, p=self.nominal_input_change_probability, size=self.sample_input.shape
         )

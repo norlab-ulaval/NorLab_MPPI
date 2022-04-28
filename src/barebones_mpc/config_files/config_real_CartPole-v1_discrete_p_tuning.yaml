@@ -9,7 +9,7 @@ controler_component:
   evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
   selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
 force_headless_mode: true
-record: false
+record: true
 environment:
   type: 'gym'
   name: 'CartPole-v1'
@@ -33,18 +33,18 @@ hparam:
     seed: 0
     show_plot: true
   sampler_hparam:
-    number_samples: 900
+    number_samples: 1000
     horizon: 0.5
     prediction_step: 0.05
-    nominal_input_change_probability: 0.25
+    nominal_input_change_probability: 0.4
   model_hparam:
-    cart_mass: 1
-    pendulum_mass: 3
+    cart_mass: 1.0
+    pendulum_mass: 0.1
   evaluator_hparam:
-    std_dev: 1.2
+    std_dev: 0.00001
     beta: 0
-    inverse_temperature: 0.01
-    state_weights: 4
+    inverse_temperature: 0.0
+    state_weights: [3.0, 1.0, 12.0, 1.0]
   selector_hparam: ~
 constraints:
   input_constraint:
@@ -53,7 +53,7 @@ constraints:
       lowwer_bound: 0
   state-constraint:
     <state-space-1-placeholder>:
-      uper_bound: 1.0
-      lowwer_bound: -1.0
+      uper_bound: [2.4, Inf, 0.2095, Inf]
+      lowwer_bound: [-2.4, -Inf, -0.2095, -Inf]
 experimental_notes: |
   Nothing for now
