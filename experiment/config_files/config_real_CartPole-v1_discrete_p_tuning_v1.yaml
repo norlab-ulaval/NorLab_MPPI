@@ -9,7 +9,7 @@ controler_component:
   evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
   selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
 force_headless_mode: true
-record: true
+record: false
 environment:
   type: 'gym'
   name: 'CartPole-v1'
@@ -44,7 +44,7 @@ hparam:
     std_dev: 0.00001
     beta: 0
     inverse_temperature: 0.0
-    state_weights: [3.0, 1.0, 12.0, 1.0]
+    state_weights: [1.0, 0.0, 12.0, 0.0] #Reached return 500 on 4/6 of run
   selector_hparam: ~
 constraints:
   input_constraint:
@@ -56,4 +56,4 @@ constraints:
       uper_bound: [2.4, Inf, 0.2095, Inf]
       lowwer_bound: [-2.4, -Inf, -0.2095, -Inf]
 experimental_notes: |
-  Nothing for now
+  Reached return 500 on 4/6 of run

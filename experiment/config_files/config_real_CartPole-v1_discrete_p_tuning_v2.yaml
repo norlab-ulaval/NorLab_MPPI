@@ -1,0 +1,60 @@
+# Norlab-MPPI barebones_mpc config CartPole-v1
+---
+config_name: 'CartPole-v1 discrete sampler p (V2)'
+config_short_description: "gym CartPole-v1 Discrete hyper parma tunning"
+controler_component:
+  nominalPath: src.barebones_mpc.nominal_path.random_NP.RandomNominalPath
+  model: src.barebones_mpc.model.inv_pendulum_model.InvPendulumModel
+  sampler: src.barebones_mpc.sampler.discrete_sampler_p.DiscreteSamplerP
+  evaluator: src.barebones_mpc.evaluator.quadratic_evaluator.QuadraticEvaluator
+  selector: src.barebones_mpc.selector.greedy_selector.GreedySelector
+force_headless_mode: true
+record: false
+environment:
+  type: 'gym'
+  name: 'CartPole-v1'
+  rendering_interval: 1
+  observation_space:
+    dim: 4
+    cart_position: 4.8
+    cart_velocity: Inf
+    pole_angle: 0.418
+    pole_angular_velocity: Inf
+  input_space:
+    type: discrete
+    dim: 1
+    legal_actions: [0, 1]
+hparam:
+  controler:
+    state_t0: ~
+  nominal_path_bootstrap: ~
+  experimental_hparam:
+#    experimental_window: 500
+    experimental_window: 3000
+    seed: 0
+    show_plot: true
+  sampler_hparam:
+    number_samples: 1000
+    horizon: 0.5
+    prediction_step: 0.05
+    nominal_input_change_probability: 0.19
+  model_hparam:
+    cart_mass: 1.0
+    pendulum_mass: 0.1
+  evaluator_hparam:
+    std_dev: 0.00001
+    beta: 0
+    inverse_temperature: 0.0
+    state_weights: [1.1, 0.0, 11.0, 0.0]
+  selector_hparam: ~
+constraints:
+  input_constraint:
+    input_space_dim:
+      uper_bound: 1
+      lowwer_bound: 0
+  state-constraint:
+    <state-space-1-placeholder>:
+      uper_bound: [2.4, Inf, 0.2095, Inf]
+      lowwer_bound: [-2.4, -Inf, -0.2095, -Inf]
+experimental_notes: |
+  Reached return 500 on 3/8 of run
