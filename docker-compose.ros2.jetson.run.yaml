@@ -3,10 +3,11 @@ version: "3.9"
 services:
   develop:
     image: norlabsnow/norlab-ros2-humble-develop:arm64-l4t-r35.2.1
-    container_name: IamSNOW-NX-TEST
+    container_name: IamSNOW-norlab-MPPI
     environment:
-      DS_CONTAINER_NAME: IamSNOW-NX-TEST
-      DS_TARGET_PROJECT_SRC_REPO: NorLab_MPPI
+      DN_CONTAINER_NAME: IamSNOW-norlab-MPPI
+      DN_ACTIVATE_POWERLINE_PROMT: false
+      DN_TARGET_PROJECT_SRC_REPO: NorLab_MPPI
       DISPLAY: ${DISPLAY}
       QT_X11_NO_MITSHM: 1
       XAUTHORITY: /tmp/.docker.xauth
@@ -17,6 +18,7 @@ services:
       ROS_DOMAIN_ID: 1
     volumes:
       - /home/snow/NorLab_MPPI:/ros2_ws/src/NorLab_MPPI
+      - /home/snow/norlab_WMRD:/ros2_ws/src/norlab_WMRD
       - /etc/localtime:/etc/localtime:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
@@ -31,15 +33,15 @@ services:
     cap_add:
       - SYS_PTRACE
 
-#    network_mode: host # allow the container to have full access to the host’s networking system
-    ## Note: Port mapping is incompatible with network_mode: host
-    network_mode: bridge
+    network_mode: host # allow the container to have full access to the host’s networking system
     pid: host
-    ports:
-      - "11311:11311" # Warthog ros master
-      - "80:80" # default ros master port
-      - "2222:22" # ssh
-    #      - "7777:7777" # gdbserver
+#    ## Note: Port mapping is incompatible with network_mode: host
+#    network_mode: bridge
+#    ports:
+#      - "11311:11311" # Warthog ros master
+#      - "80:80" # default ros master port
+#      - "2222:22" # ssh
+#    #      - "7777:7777" # gdbserver
     #    networks:
     #      - ros-network
 #    extra_hosts:
